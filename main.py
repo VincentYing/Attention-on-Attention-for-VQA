@@ -19,9 +19,6 @@ from loader import Data_loader
 
 
 
-
-
-
 """
 Import New Models Below 
 
@@ -34,9 +31,9 @@ from BaseLineModel import BaseLineModel
 
 
 
-
-
-
+"""
+This is actually validation
+"""
 def test(args):
     # Some preparation
     torch.manual_seed(1000)
@@ -46,7 +43,7 @@ def test(args):
         raise SystemExit('No CUDA available, don\'t do this.')
 
     print ('Loading data')
-    loader = Data_loader(args.bsize, args.emb, args.multilabel, train=False)
+    loader = Data_loader(batch_size=args.bsize, emb_dim=args.emb, multilabel=args.multilabel, train=False)
     print ('Parameters:\n\tvocab size: %d\n\tembedding dim: %d\n\tK: %d\n\tfeature dim: %d\
             \n\thidden dim: %d\n\toutput dim: %d' % (loader.q_words, args.emb, loader.K, loader.feat_dim,
                 args.hid, loader.n_answers))
@@ -89,10 +86,12 @@ def test(args):
     print ('Validation done')
 
 
+
+
 """
 Name: train
 
-
+Adam optimizer currently 
 """
 def train(args):
     # Some preparation
@@ -103,7 +102,11 @@ def train(args):
         raise SystemExit('No CUDA available, don\'t do this.')
 
     print ('Loading data')
-    loader = Data_loader(args.bsize, args.emb, args.multilabel)
+
+
+    loader = Data_loader(batch_size=args.bsize, emb_dim=args.emb, multilabel=args.multilabel, train=True)
+
+
     print ('Parameters:\n\tvocab size: %d\n\tembedding dim: %d\n\tK: %d\n\tfeature dim: %d\
             \n\thidden dim: %d\n\toutput dim: %d' % (loader.q_words, args.emb, loader.K, loader.feat_dim,
                 args.hid, loader.n_answers))
@@ -111,18 +114,13 @@ def train(args):
 
 
 
-
-
-
     """
     Make a call to what ever model you want here
     
     e.i. 
-    
     model = BaseLineModel( args ...
                             )
     """
-
     model = BaseLineModel(vocab_size=loader.q_words,
                   emb_dim=args.emb,
                   K=loader.K,
@@ -130,6 +128,8 @@ def train(args):
                   hid_dim=args.hid,
                   out_dim=loader.n_answers,
                   pretrained_wemb=loader.pretrained_wemb)
+
+
     
     if args.multilabel:
         criterion = nn.BCEWithLogitsLoss()
@@ -194,6 +194,29 @@ def train(args):
         }
         torch.save(tbs, 'save/model-' + str(ep+1) + '.pth.tar')
         print ('Epoch %02d done, average loss: %.3f, average accuracy: %.2f%%' % (ep+1, ep_loss / loader.n_batches, ep_correct * 100 / (loader.n_batches * args.bsize)))
+
+
+
+
+
+
+
+
+
+        """
+        
+        Run Validation Here 
+        
+        
+        """
+
+
+
+
+
+
+
+
 
 
 """
