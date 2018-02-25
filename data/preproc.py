@@ -110,6 +110,7 @@ def combine_qa(questions, annotations, phase):
     json.dump(data, open('vqa_' + phase + '_combined.json', 'w'))
 
 def download_vqa_v2():
+
     # download input questions (train + val)
     os.system('wget http://visualqa.org/data/mscoco/vqa/v2_Questions_Train_mscoco.zip -P zip/')
     os.system('wget http://visualqa.org/data/mscoco/vqa/v2_Questions_Val_mscoco.zip -P zip/')
@@ -124,11 +125,42 @@ def download_vqa_v2():
     os.system('unzip zip/v2_Annotations_Train_mscoco.zip -d raw/')
     os.system('unzip zip/v2_Annotations_Val_mscoco.zip -d raw/')
 
+
+
+def download_test_vqa_v2():
+    # download input questions (test)
+    os.system('wget http://visualqa.org/data/mscoco/vqa/v2_Questions_Test_mscoco.zip -P zip/')
+
+    # download annotations
+    os.system('wget http://visualqa.org/data/mscoco/vqa/v2_Annotations_Test_mscoco.zip -P zip/')
+
+    # extract them
+    os.system('unzip zip/v2_Questions_Test_mscoco.zip -d raw/')
+    os.system('unzip zip/v2_Annotations_Test_mscoco.zip -d raw/')
+
+
+
 if __name__ == '__main__':
+
+    """
     # First download and extract
     if not os.path.exists('raw'):
         download_vqa_v2()
+    """
 
+    """
+    # Get Test data
+    if not os.path.exists('raw'):
+        download_test_vqa_v2()
+    
+    """
+
+
+
+
+
+
+    """
     # Combine Q and A
     if not os.path.exists('vqa_train_combined.json'):
         print ('Combining train q and a...')
@@ -136,7 +168,41 @@ if __name__ == '__main__':
         train_a = json.load(open('raw/v2_mscoco_train2014_annotations.json'))
         combine_qa(train_q, train_a['annotations'], 'train')
 
+     # Tokenize
+    if not os.path.exists('vqa_train_toked.json'):
+        print('Tokenizing train...')
+        train = json.load(open('vqa_train_combined.json'))
+        tokenize_q(train, 'train')
     """
+
+
+
+    """
+    We can download 'vqa_train_toked.json' (https://drive.google.com/drive/folders/0B5j6QKJb0ztbYmVXT0hBUF91RHM)
+    So we don't have to do the above steps and can start from here 
+    
+    :)
+    """
+
+    # Build dictionary for question and answers
+    if not os.path.exists('vqa_train_final.json'):
+        print('Building train dictionary...')
+        train = json.load(open('vqa_train_toked.json'))
+        process_q(train)
+        process_a(train, 'train')
+
+
+
+
+
+
+
+
+
+
+
+    """
+    # Val 
     if not os.path.exists('vqa_val_combined.json'):
         print ('Combining val q and a...')
         val_q = json.load(open('raw/v2_OpenEnded_mscoco_val2014_questions.json'))
@@ -144,31 +210,86 @@ if __name__ == '__main__':
         combine_qa(val_q, val_a['annotations'], 'val')
     """
 
-    # Tokenize
-    if not os.path.exists('vqa_train_toked.json'):
-        print ('Tokenizing train...')
-        train = json.load(open('vqa_train_combined.json'))
-        tokenize_q(train, 'train')
-
     """
+    # Val
     if not os.path.exists('vqa_val_toked.json'):
         print ('Tokenizing val...')
         val = json.load(open('vqa_val_combined.json'))
         tokenize_q(val, 'val')
     """
 
-    # Build dictionary for question and answers
-    if not os.path.exists('vqa_train_final.json'):
-        print ('Building train dictionary...')
-        train = json.load(open('vqa_train_toked.json'))
-        process_q(train)
-        process_a(train, 'train')
-
     """
+        We can download 'vqa_val_toked.json' (https://drive.google.com/drive/folders/0B5j6QKJb0ztbYmVXT0hBUF91RHM)
+        So we don't have to do the above steps and can start from here 
+
+        :)
+    """
+    """
+    # Val 
     if not os.path.exists('vqa_val_final.json'):
         print ('Building val dictionary...')
         val = json.load(open('vqa_val_toked.json'))
+        process_q(val)
         process_a(val, 'val')
     """
+
+
+
+
+
+
+
+
+
+
+    """
+    This is what TEST should kinda be like???
+    I just copied the top and replaces every train/val with test
+    """
+
+    """
+    # TEST
+    if not os.path.exists('vqa_test_combined.json'):
+        print ('Combining test q and a...')
+        test_q = json.load(open('raw/v2_OpenEnded_mscoco_test2014_questions.json'))
+        test_a = json.load(open('raw/v2_mscoco_test2014_annotations.json'))
+        combine_qa(test_q, test_a['annotations'], 'test')
+    """
+
+    """
+    # TEST
+    if not os.path.exists('vqa_test_toked.json'):
+        print ('Tokenizing test...')
+        test = json.load(open('vqa_test_combined.json'))
+        tokenize_q(test, 'test')
+    """
+
+    """
+    We can download 'vqa_test_toked.json' 
     
+    NEED TO MAKE & UPLOAD Still 
+
+    So we don't have to do the above steps and can start from here 
+
+    :)
+    """
+    """
+    # TEST 
+    if not os.path.exists('vqa_test_final.json'):
+        print ('Building test dictionary...')
+        test = json.load(open('vqa_test_toked.json'))
+        process_q(test)
+        process_a(test, 'test')
+    """
+
+
+
+
+
+
+
+
+
+
+
     print ('Done')
