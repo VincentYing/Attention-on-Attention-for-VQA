@@ -5,8 +5,8 @@ Building off/to architecture from [Tips and Tricks for Visual Question Answering
 
 
 ## Thank You to: [Mark](https://github.com/markdtw)
-- Our implementations started off referencing Mark's work and relies heavily on his base code.
-- Mark's code was used to preprocess the VQA 2.0 data, but all Model code is written by us
+- Our implementations started off referencing Mark's work.
+- Mark's code was used to preprocess alot of the VQA 2.0 data, but all Model code is written by us
 - Our Code further fixes Mark's bugs and allows for Testing the model on the Test set as well
 
 ## Prerequisites
