@@ -76,8 +76,10 @@ class Data_loader:
 
         # initialize loader
         self.n_batches = self.n_questions // self.bsize
-        self.K = self.i_feat.values()[0].shape[0]
-        self.feat_dim = self.i_feat.values()[0].shape[1]
+        #self.K = self.i_feat.values()[0].shape[0]
+        self.K = 36
+        #self.feat_dim = self.i_feat.values()[0].shape[1]
+        self.feat_dim = 2048
         self.init_pretrained_wemb(emb_dim)
         self.epoch_reset()
 
