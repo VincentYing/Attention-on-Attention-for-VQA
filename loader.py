@@ -10,32 +10,67 @@ import numpy as np
 
 class Data_loader:
     # Before using data loader, make sure your data/ folder contains required files
-    def __init__(self, batch_size=512, emb_dim=300, multilabel=False, train=True):
+    def __init__(self, batch_size=512, emb_dim=300, multilabel=False, train=True, val=False, test=False):
         self.bsize = batch_size
         self.emb_dim = emb_dim
         self.multilabel = multilabel
         self.train = train
         self.seqlen = 14    # hard set based on paper
 
-        q_dict = pickle.load(open('data/train_q_dict.p', 'rb'))
-        self.q_itow = q_dict['itow']
-        self.q_wtoi = q_dict['wtoi']
-        self.q_words = len(self.q_itow) + 1
-
-        a_dict = pickle.load(open('data/train_a_dict.p', 'rb'))
-        self.a_itow = a_dict['itow']
-        self.a_wtoi = a_dict['wtoi']
-        self.n_answers = len(self.a_itow) + 1
 
         if train:
+            q_dict = pickle.load(open('data/train_q_dict.p', 'rb'))
+            self.q_itow = q_dict['itow']
+            self.q_wtoi = q_dict['wtoi']
+            self.q_words = len(self.q_itow) + 1
+
+            a_dict = pickle.load(open('data/train_a_dict.p', 'rb'))
+            self.a_itow = a_dict['itow']
+            self.a_wtoi = a_dict['wtoi']
+            self.n_answers = len(self.a_itow) + 1
+
             self.vqa = json.load(open('data/vqa_train_final.json'))
             self.n_questions = len(self.vqa)
-        else:
+
+            # should have more efficient way to load image feature
+            self.i_feat = np.load('data/coco_features.npy').item()
+
+
+        elif val:
+            q_dict = pickle.load(open('data/val_q_dict.p', 'rb'))
+            self.q_itow = q_dict['itow']
+            self.q_wtoi = q_dict['wtoi']
+            self.q_words = len(self.q_itow) + 1
+
+            a_dict = pickle.load(open('data/val_a_dict.p', 'rb'))
+            self.a_itow = a_dict['itow']
+            self.a_wtoi = a_dict['wtoi']
+            self.n_answers = len(self.a_itow) + 1
+
             self.vqa = json.load(open('data/vqa_val_final.json'))
             self.n_questions = len(self.vqa)
 
-        # should have more efficient way to load image feature
-        self.i_feat = np.load('data/coco_features.npy').item()
+            # should have more efficient way to load image feature
+            self.i_feat = np.load('data/coco_features.npy').item()
+
+
+        elif test:
+            q_dict = pickle.load(open('data/test_q_dict.p', 'rb'))
+            self.q_itow = q_dict['itow']
+            self.q_wtoi = q_dict['wtoi']
+            self.q_words = len(self.q_itow) + 1
+
+            a_dict = pickle.load(open('data/test_a_dict.p', 'rb'))
+            self.a_itow = a_dict['itow']
+            self.a_wtoi = a_dict['wtoi']
+            self.n_answers = len(self.a_itow) + 1
+
+            self.vqa = json.load(open('data/vqa_test_final.json'))
+            self.n_questions = len(self.vqa)
+
+            # should have more efficient way to load image feature
+            self.i_feat = np.load('data/coco_features_test.npy').item()
+
 
         print ('Loading done')
 
