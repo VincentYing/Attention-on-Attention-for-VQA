@@ -32,9 +32,6 @@ if __name__ == '__main__':
                 item[field] = np.frombuffer(base64.decodestring(item[field]), 
                       dtype=np.float32).reshape((item['num_boxes'],-1))
             in_data[item['image_id']] = item
-            break
+
         with open(outfile, "wb") as Out_f:
             np.save(outfile, in_data)
-
-data = np.load(outfile)
-print (data)
