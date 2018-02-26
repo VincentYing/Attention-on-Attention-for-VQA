@@ -17,22 +17,22 @@ import numpy as np
 
 from loader import Data_loader
 
-
-
 """
-Import New Models Below 
-
+Import Models  
 """
 from model import Model
 from BaseLineModel import BaseLineModel
+from Model_1 import Model_1
 
-
-
+Model_Variable = BaseLineModel
 
 
 
 """
-This is actually validation
+Name: test
+
+This function tests the model on the TEST Set. 
+Only do this at the end. 
 """
 def test(args):
     # Some preparation
@@ -43,12 +43,81 @@ def test(args):
         raise SystemExit('No CUDA available, don\'t do this.')
 
     print ('Loading data')
-    loader = Data_loader(batch_size=args.bsize, emb_dim=args.emb, multilabel=args.multilabel, train=False)
+    loader = Data_loader(batch_size=args.bsize, emb_dim=args.emb, multilabel=args.multilabel,
+                         train=False, val=False, test=True)
     print ('Parameters:\n\tvocab size: %d\n\tembedding dim: %d\n\tK: %d\n\tfeature dim: %d\
             \n\thidden dim: %d\n\toutput dim: %d' % (loader.q_words, args.emb, loader.K, loader.feat_dim,
                 args.hid, loader.n_answers))
 
-    model = Model(vocab_size=loader.q_words,
+    # chose model & build its graph, Model chosen above in global variable
+    model = Model_Variable(vocab_size=loader.q_words,
+                  emb_dim=args.emb,
+                  K=loader.K,
+                  feat_dim=loader.feat_dim,
+                  hid_dim=args.hid,
+                  out_dim=loader.n_answers,
+                  pretrained_wemb=loader.pretrained_wemb)
+
+    model = model.cuda()
+
+    if args.modelpath and os.path.isfile(args.modelpath):
+        print ('Resuming from checkpoint %s' % (args.modelpath))
+        ckpt = torch.load(args.modelpath)
+        model.load_state_dict(ckpt['state_dict'])
+    else:
+        raise SystemExit('Need to provide model path.')
+
+    result = []
+    for step in xrange(loader.n_batches):
+        # Batch preparation
+        q_batch, a_batch, i_batch = loader.next_batch()
+        q_batch = Variable(torch.from_numpy(q_batch))
+        i_batch = Variable(torch.from_numpy(i_batch))
+        q_batch, i_batch = q_batch.cuda(), i_batch.cuda()
+
+        # Do one model forward and optimize
+        output = model(q_batch, i_batch)
+        _, ix = output.data.max(1)
+        for i, qid in enumerate(a_batch):
+            result.append({
+                'question_id': qid,
+                'answer': loader.a_itow[ix[i]]
+            })
+
+    json.dump(result, open('result.json', 'w'))
+    print ('Validation done')
+
+
+
+
+
+
+
+
+"""
+Name: val
+
+This function tests the model on the validation set
+This function does this directly.
+However the model is also tested 
+"""
+def val(args):
+    # Some preparation
+    torch.manual_seed(1000)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(1000)
+    else:
+        raise SystemExit('No CUDA available, don\'t do this.')
+
+    print ('Loading data')
+    loader = Data_loader(batch_size=args.bsize, emb_dim=args.emb, multilabel=args.multilabel,
+                         train=False, val=True, test=False)
+    print ('Parameters:\n\tvocab size: %d\n\tembedding dim: %d\n\tK: %d\n\tfeature dim: %d\
+            \n\thidden dim: %d\n\toutput dim: %d' % (loader.q_words, args.emb, loader.K, loader.feat_dim,
+                args.hid, loader.n_answers))
+
+    # chose model & build its graph, Model chosen above in global variable
+    model = Model_Variable(vocab_size=loader.q_words,
                   emb_dim=args.emb,
                   K=loader.K,
                   feat_dim=loader.feat_dim,
@@ -101,35 +170,27 @@ def train(args):
     else:
         raise SystemExit('No CUDA available, don\'t do this.')
 
-    print ('Loading data')
-
-
-    loader = Data_loader(batch_size=args.bsize, emb_dim=args.emb, multilabel=args.multilabel, train=True)
-
-
+    # Load Data
+    print ('Loading data for training ')
+    loader = Data_loader(batch_size=args.bsize, emb_dim=args.emb, multilabel=args.multilabel,
+                         train=True, val=False, test=False)
     print ('Parameters:\n\tvocab size: %d\n\tembedding dim: %d\n\tK: %d\n\tfeature dim: %d\
             \n\thidden dim: %d\n\toutput dim: %d' % (loader.q_words, args.emb, loader.K, loader.feat_dim,
                 args.hid, loader.n_answers))
+
+
+
+
     print ('Initializing model')
 
-
-
-    """
-    Make a call to what ever model you want here
-    
-    e.i. 
-    model = BaseLineModel( args ...
-                            )
-    """
-    model = BaseLineModel(vocab_size=loader.q_words,
+    # chose model & build its graph, Model chosen above in global variable
+    model = Model_Variable(vocab_size=loader.q_words,
                   emb_dim=args.emb,
                   K=loader.K,
                   feat_dim=loader.feat_dim,
                   hid_dim=args.hid,
                   out_dim=loader.n_answers,
                   pretrained_wemb=loader.pretrained_wemb)
-
-
     
     if args.multilabel:
         criterion = nn.BCEWithLogitsLoss()
@@ -184,6 +245,9 @@ def train(args):
             loss.backward()
             optimizer.step()
 
+
+
+
         # Save model after every epoch
         tbs = {
             'epoch': ep + 1,
@@ -228,7 +292,8 @@ Calls Train or Test above
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Winner of VQA 2.0 in CVPR\'17 Workshop')
     parser.add_argument('--train', action='store_true', help='set this to train.')
-    parser.add_argument('--eval', action='store_true', help='set this to evaluate.')
+    parser.add_argument('--eval', action='store_true', help='set this to evaluate on validation set')
+    parser.add_argument('--test', action='store_true', help='set this to evaluate on TEST set')
     parser.add_argument('--lr', metavar='', type=float, default=1e-4, help='initial learning rate')
     parser.add_argument('--ep', metavar='', type=int, default=50, help='number of epochs.')
     parser.add_argument('--bsize', metavar='', type=int, default=512, help='batch size.')
@@ -241,6 +306,8 @@ if __name__ == '__main__':
     if args.train:
         train(args)
     if args.eval:
+        val(args)
+    if args.test:
         test(args)
     if not args.train and not args.eval:
         parser.print_help()
