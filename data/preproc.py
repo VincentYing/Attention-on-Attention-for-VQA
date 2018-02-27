@@ -157,9 +157,6 @@ if __name__ == '__main__':
 
 
 
-
-
-
     """
     # Combine Q and A
     if not os.path.exists('vqa_train_combined.json'):
@@ -174,26 +171,18 @@ if __name__ == '__main__':
         train = json.load(open('vqa_train_combined.json'))
         tokenize_q(train, 'train')
     """
-
-
-
     """
     We can download 'vqa_train_toked.json' (https://drive.google.com/drive/folders/0B5j6QKJb0ztbYmVXT0hBUF91RHM)
     So we don't have to do the above steps and can start from here 
     
     :)
     """
-
     # Build dictionary for question and answers
     if not os.path.exists('vqa_train_final.json'):
         print('Building train dictionary...')
         train = json.load(open('vqa_train_toked.json'))
         process_q(train)
         process_a(train, 'train')
-
-
-
-
 
 
 
@@ -208,22 +197,18 @@ if __name__ == '__main__':
         val_q = json.load(open('raw/v2_OpenEnded_mscoco_val2014_questions.json'))
         val_a = json.load(open('raw/v2_mscoco_val2014_annotations.json'))
         combine_qa(val_q, val_a['annotations'], 'val')
-    """
 
-    """
     # Val
     if not os.path.exists('vqa_val_toked.json'):
         print ('Tokenizing val...')
         val = json.load(open('vqa_val_combined.json'))
         tokenize_q(val, 'val')
     """
-
     """
         We can download 'vqa_val_toked.json' (https://drive.google.com/drive/folders/0B5j6QKJb0ztbYmVXT0hBUF91RHM)
         So we don't have to do the above steps and can start from here 
 
         :)
-    """
     """
     # Val 
     if not os.path.exists('vqa_val_final.json'):
@@ -231,10 +216,6 @@ if __name__ == '__main__':
         val = json.load(open('vqa_val_toked.json'))
         process_q(val)
         process_a(val, 'val')
-    """
-
-
-
 
 
 
@@ -254,16 +235,13 @@ if __name__ == '__main__':
         test_q = json.load(open('raw/v2_OpenEnded_mscoco_test2014_questions.json'))
         test_a = json.load(open('raw/v2_mscoco_test2014_annotations.json'))
         combine_qa(test_q, test_a['annotations'], 'test')
-    """
-
-    """
+    
     # TEST
     if not os.path.exists('vqa_test_toked.json'):
         print ('Tokenizing test...')
         test = json.load(open('vqa_test_combined.json'))
         tokenize_q(test, 'test')
     """
-
     """
     We can download 'vqa_test_toked.json' 
     
@@ -281,15 +259,6 @@ if __name__ == '__main__':
         process_q(test)
         process_a(test, 'test')
     """
-
-
-
-
-
-
-
-
-
 
 
     print ('Done')
