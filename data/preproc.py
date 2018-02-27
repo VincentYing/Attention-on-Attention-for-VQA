@@ -181,7 +181,7 @@ if __name__ == '__main__':
     if not os.path.exists('vqa_train_final.json'):
         print('Building train dictionary...')
         train = json.load(open('vqa_train_toked.json'))
-        process_q(train, 'val')
+        process_q(train, 'train')
         process_a(train, 'train')
 
 
@@ -256,7 +256,7 @@ if __name__ == '__main__':
     if not os.path.exists('vqa_test_final.json'):
         print ('Building test dictionary...')
         test = json.load(open('vqa_test_toked.json'))
-        process_q(test)
+        process_q(test, 'test')
         process_a(test, 'test')
     """
 
