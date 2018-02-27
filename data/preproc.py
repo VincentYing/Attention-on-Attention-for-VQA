@@ -46,7 +46,7 @@ def process_a(q, phase):
 
     json.dump(q, open('vqa_' + phase + '_final.json', 'w'))
 
-def process_q(q):
+def process_q(q, phase):
     # build question dictionary
     def build_vocab(questions):
         count_thr = 0
@@ -74,7 +74,7 @@ def process_q(q):
     vocab = build_vocab(q)
     itow = {i+1:w for i,w in enumerate(vocab)} # a 1-indexed vocab translation table
     wtoi = {w:i+1 for i,w in enumerate(vocab)} # inverse table
-    pickle.dump({'itow': itow, 'wtoi': wtoi}, open('train_q_dict.p', 'wb'))
+    pickle.dump({'itow': itow, 'wtoi': wtoi}, open(phase+'_q_dict.p', 'wb'))
 
 def tokenize_q(qa, phase):
     qas = len(qa)
@@ -181,7 +181,7 @@ if __name__ == '__main__':
     if not os.path.exists('vqa_train_final.json'):
         print('Building train dictionary...')
         train = json.load(open('vqa_train_toked.json'))
-        process_q(train)
+        process_q(train, 'val')
         process_a(train, 'train')
 
 
@@ -214,7 +214,7 @@ if __name__ == '__main__':
     if not os.path.exists('vqa_val_final.json'):
         print ('Building val dictionary...')
         val = json.load(open('vqa_val_toked.json'))
-        process_q(val)
+        process_q(val, 'val')
         process_a(val, 'val')
 
 
