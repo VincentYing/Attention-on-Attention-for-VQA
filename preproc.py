@@ -157,9 +157,6 @@ if __name__ == '__main__':
 
 
 
-
-
-
     """
     # Combine Q and A
     if not os.path.exists('vqa_train_combined.json'):
@@ -174,8 +171,6 @@ if __name__ == '__main__':
         train = json.load(open('vqa_train_combined.json'))
         tokenize_q(train, 'train')
     """
-
-
     """
     We can download 'vqa_train_toked.json' (https://drive.google.com/drive/folders/0B5j6QKJb0ztbYmVXT0hBUF91RHM)
     So we don't have to do the above steps and can start from here 
@@ -188,13 +183,6 @@ if __name__ == '__main__':
         train = json.load(open('vqa_train_toked.json'))
         process_q(train)
         process_a(train, 'train')
-
-
-
-
-
-
-
 
 
 
@@ -216,8 +204,6 @@ if __name__ == '__main__':
         val = json.load(open('vqa_val_combined.json'))
         tokenize_q(val, 'val')
     """
-
-
     """
         We can download 'vqa_val_toked.json' (https://drive.google.com/drive/folders/0B5j6QKJb0ztbYmVXT0hBUF91RHM)
         So we don't have to do the above steps and can start from here 
@@ -230,10 +216,6 @@ if __name__ == '__main__':
         val = json.load(open('vqa_val_toked.json'))
         process_q(val)
         process_a(val, 'val')
-
-
-
-
 
 
 
@@ -277,9 +259,6 @@ if __name__ == '__main__':
         process_q(test)
         process_a(test, 'test')
     """
-
-
-
 
 
     print ('Done')

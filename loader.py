@@ -14,8 +14,10 @@ class Data_loader:
         self.bsize = batch_size
         self.emb_dim = emb_dim
         self.multilabel = multilabel
-        self.train = train
         self.seqlen = 14    # hard set based on paper
+        self.train = train
+        self.test = test
+        self.val = val
 
 
         if train:
@@ -31,6 +33,20 @@ class Data_loader:
 
             self.vqa = json.load(open('data/vqa_train_final.json'))
             self.n_questions = len(self.vqa)
+
+            """
+            
+            HOW DO WE SPLIT coco_features.npy
+            
+            
+            iids = self.vqa[:]['image_id']
+            self.i_feat = np.load('data/coco_features.npy').item()
+            self.i_feat = self.i_feat['image_id' == iids]
+            
+            self.i_feat = self.i_feat[ self.i_feat['image_id'].isin(iids)]
+            """
+
+
 
             # should have more efficient way to load image feature
             self.i_feat = np.load('data/coco_features.npy').item()
@@ -49,6 +65,18 @@ class Data_loader:
 
             self.vqa = json.load(open('data/vqa_val_final.json'))
             self.n_questions = len(self.vqa)
+
+            """
+
+            HOW DO WE SPLIT coco_features.npy
+
+
+            iids = self.vqa[:]['image_id']
+            self.i_feat = np.load('data/coco_features.npy').item()
+            self.i_feat = self.i_feat['image_id' == iids]
+            
+            self.i_feat = self.i_feat[ self.i_feat['image_id'].isin(iids)]
+            """
 
             # should have more efficient way to load image feature
             self.i_feat = np.load('data/coco_features.npy').item()
@@ -76,10 +104,8 @@ class Data_loader:
 
         # initialize loader
         self.n_batches = self.n_questions // self.bsize
-        #self.K = self.i_feat.values()[0].shape[0]
-        self.K = 36
-        #self.feat_dim = self.i_feat.values()[0].shape[1]
-        self.feat_dim = 2048
+        self.K = self.i_feat.values()[0].shape[0]
+        self.feat_dim = self.i_feat.values()[0].shape[1]
         self.init_pretrained_wemb(emb_dim)
         self.epoch_reset()
 
@@ -106,12 +132,21 @@ class Data_loader:
         self.batch_ptr = 0
         np.random.shuffle(self.vqa)
 
+
+
+    """
+    LOOKS Hella Slow 
+    
+    
+    """
     def next_batch(self):
         """Return 3 things:
         question -> (seqlen, batch)
         answer -> (batch, n_answers) or (batch, )
         image feature -> (batch, feat_dim)
         """
+
+        # Only does training on full batches
         if self.batch_ptr + self.bsize >= self.n_questions:
             self.epoch_reset()
 
@@ -128,26 +163,38 @@ class Data_loader:
                     q[i] = 0    # validation questions may contain unseen word
             q_batch.append(q)
 
+
             # answer or question id batch
             if self.train:
+                # Soft answers
                 if self.multilabel:
                     a = np.zeros(self.n_answers, dtype=np.float32)
                     for w, c in self.vqa[self.batch_ptr + b]['answers_w_scores']:
                         a[self.a_wtoi[w]] = c
                     a_batch.append(a)
                 else:
+                # Hard aniswers
                     try:
                         a_batch.append(self.a_wtoi[self.vqa[self.batch_ptr + b]['answer']])
                     except:
                         a_batch.append(0)
-            else:
+
+
+            elif self.val:
                 # in validation phase return question id instead of answer to write to a json file
                 # you could also modify this to calculate the accuracy
                 a_batch.append(self.vqa[self.batch_ptr + b]['question_id'])
-            
+            elif self.test:
+                #do stuff
+                print ('test')
+
             # image batch
-            iid = self.vqa[self.batch_ptr + b]['image_id']
+            iid = self.vqa[self.batch_ptr + b]['image_id'] # Get the ID corresponding to the image needed
+            """
+            Original:
             i_batch.append(self.i_feat[iid])
+            """
+            i_batch.append(self.i_feat['image_id'][iid])
 
         self.batch_ptr += self.bsize
         q_batch = np.asarray(q_batch)   # (batch, seqlen)
