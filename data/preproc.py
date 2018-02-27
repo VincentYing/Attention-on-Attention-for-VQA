@@ -9,7 +9,7 @@ import collections
 import cPickle as pickle
 
 from tqdm import tqdm
-from nltk.tokenize.stanford import StanfordTokenizer
+from nltk.tokenize import StanfordTokenizer
 
 def process_a(q, phase):
     counts = {}
