@@ -184,7 +184,7 @@ def train(args):
                 args.hid, loader.n_answers))
     print('Loading data for validation ')
     # batch_size=0 is a special case to process all data
-    validation_loader = Data_loader(batch_size=0, emb_dim=args.emb, multilabel=args.multilabel,
+    validation_loader = Data_loader(batch_size=args.bsize, emb_dim=args.emb, multilabel=args.multilabel,
                          train=False, val=True, test=False)
 
 
@@ -224,7 +224,7 @@ def train(args):
     # Training script 
     print ('Start training.')
     train_loss_split = [] # will be a list of lists => [ epoch1[], epoch2[], ...]
-    val_loss_per_epoch = []
+    val_loss_per_epoch = [] # will be a list of lists => [ epoch1[], epoch2[], ...]
     train_accuracy_split = []  # will be a list of lists => [ epoch1[], epoch2[], ...]
     val_accuracy_per_epoch = []
 
@@ -277,7 +277,7 @@ def train(args):
         """
         Run Validation Here 
         """
-        for step in xrange(loader.n_batches):
+        for step in xrange(validation_loader.n_batches):
             # All Validation set preparation
             q, a, i = validation_loader.next_batch()
             q = Variable(torch.from_numpy(q))
@@ -318,7 +318,7 @@ def train(args):
         print (
                 'Epoch %02d done, average train loss: %.3f, average train accuracy: %.2f%%, average train loss: %.3f, average train accuracy: %.2f%%' %
                (ep+1, sum(train_loss_split[ep])/len(train_loss_split[ep]), sum(train_accuracy_split[ep])/len(train_accuracy_split[ep]),
-                val_loss_per_epoch[ep], val_accuracy_per_epoch[ep])
+                sum(val_loss_per_epoch[ep])/len(val_loss_per_epoch[ep]), sum(val_accuracy_per_epoch[ep])/len(val_accuracy_per_epoch[ep]))
         )
 
 
@@ -332,8 +332,8 @@ def train(args):
         train_Y_batch_accuracies = list(chain(*train_accuracy_split))
         train_Y_batch_loss = list(chain(*train_loss_split))
 
-        val_Y_accuracies = val_accuracy_per_epoch
-        val_Y_loss = val_loss_per_epoch
+        val_Y_accuracies = list(chain(*val_accuracy_per_epoch))
+        val_Y_loss = list(chain(*val_loss_per_epoch))
 
         plt.plot(X_batch,train_Y_batch_accuracies, color='b', label ='train accuracy')
         plt.plot(X_batch_2, val_Y_accuracies, color='g', label='val accuracy')
@@ -342,15 +342,6 @@ def train(args):
         plt.plot(X_batch, train_Y_batch_loss, color='b', label='train loss')
         plt.plot(X_batch_2, val_Y_loss, color='g', label='val loss')
         plt.show()
-
-
-
-
-
-
-
-
-
 
 
 
