@@ -235,6 +235,7 @@ def train(args):
 
     for ep in xrange(args.ep):
         train_loss_split.append([])
+        val_loss_per_epoch.append([])
 
         for step in xrange(loader.n_batches):
             # Batch preparation
@@ -277,6 +278,9 @@ def train(args):
         """
         Run Validation Here 
         """
+        val_loss_per_epoch.append([])
+        val_accuracy_per_epoch.append([])
+
         for step in xrange(validation_loader.n_batches):
             # All Validation set preparation
             q, a, i = validation_loader.next_batch()
@@ -325,8 +329,8 @@ def train(args):
         """
         Plot Results Here 
         """
-        X_batch = np.arange(1,(args.ep+1),1/loader.n_batches)
-        X_batch_2 = np.arange(1, (args.ep + 1),1/validation_loader.n_batches)
+        #X_batch = np.arange(1,(args.ep+1),1/loader.n_batches)
+        #X_batch_2 = np.arange(1, (args.ep + 1),1/validation_loader.n_batches)
         #X_epoch = range(1,(args.ep+1))
 
         train_Y_batch_accuracies = list(chain(*train_accuracy_split))
@@ -335,12 +339,18 @@ def train(args):
         val_Y_accuracies = list(chain(*val_accuracy_per_epoch))
         val_Y_loss = list(chain(*val_loss_per_epoch))
 
-        plt.plot(X_batch,train_Y_batch_accuracies, color='b', label ='train accuracy')
-        plt.plot(X_batch_2, val_Y_accuracies, color='g', label='val accuracy')
+        X1 = np.arange(0,len(train_Y_batch_accuracies))
+        X2 = np.arange(0,len(train_Y_batch_loss))
+        X3 = np.arange(0, len(val_Y_accuracies))
+        X4 = np.arange(0, len(val_Y_loss))
+
+
+        plt.plot(X1,train_Y_batch_accuracies, color='b', label ='train accuracy')
+        plt.plot(X3, val_Y_accuracies, color='g', label='val accuracy')
         plt.show()
 
-        plt.plot(X_batch, train_Y_batch_loss, color='b', label='train loss')
-        plt.plot(X_batch_2, val_Y_loss, color='g', label='val loss')
+        plt.plot(X2, train_Y_batch_loss, color='b', label='train loss')
+        plt.plot(X3, val_Y_loss, color='g', label='val loss')
         plt.show()
 
 
