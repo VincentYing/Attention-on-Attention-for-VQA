@@ -326,7 +326,7 @@ def train(args):
         Plot Results Here 
         """
         X_batch = np.arange(1,(args.ep+1),1/loader.n_batches)
-        X_batch_2 = np.arange(1, (args.ep + 1),1)
+        X_batch_2 = np.arange(1, (args.ep + 1),1/validation_loader.n_batches)
         #X_epoch = range(1,(args.ep+1))
 
         train_Y_batch_accuracies = list(chain(*train_accuracy_split))

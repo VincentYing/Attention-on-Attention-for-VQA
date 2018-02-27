@@ -103,8 +103,10 @@ class Data_loader:
         if self.bsize == 0:
             self.bsize = self.n_questions
         self.n_batches = self.n_questions // self.bsize
-        self.K = self.i_feat['features'].values()[0].shape[0]
-        self.feat_dim = self.i_feat['features'].values()[0].shape[1]
+        #self.K = self.i_feat['features'].values()[0].shape[0]
+        #self.feat_dim = self.i_feat['features'].values()[0].shape[1]
+        self.K = 36
+        self.feat_dim = 2048
         self.init_pretrained_wemb(emb_dim)
         self.epoch_reset()
 
