@@ -45,9 +45,6 @@ class Data_loader:
             
             self.i_feat = self.i_feat[ self.i_feat['image_id'].isin(iids)]
             """
-
-
-
             # should have more efficient way to load image feature
             self.i_feat = np.load('data/coco_features.npy').item()
 
@@ -103,9 +100,11 @@ class Data_loader:
         print ('Loading done')
 
         # initialize loader
+        if self.bsize == 0:
+            self.bsize = self.n_questions
         self.n_batches = self.n_questions // self.bsize
-        self.K = self.i_feat.values()[0].shape[0]
-        self.feat_dim = self.i_feat.values()[0].shape[1]
+        self.K = self.i_feat['features'].values()[0].shape[0]
+        self.feat_dim = self.i_feat['features'].values()[0].shape[1]
         self.init_pretrained_wemb(emb_dim)
         self.epoch_reset()
 
@@ -137,7 +136,11 @@ class Data_loader:
     """
     LOOKS Hella Slow 
     
-    
+    Investigate: 
+    - Use range() objects to speed up
+    - Or keep question, answer, and image processing before hand 
+    - image seems like it can be done without a for loop 
+      ei iids = self.vqa[self.batch_ptr: self.batch_ptr+self.bsize]['image_id']
     """
     def next_batch(self):
         """Return 3 things:
@@ -193,8 +196,11 @@ class Data_loader:
             """
             Original:
             i_batch.append(self.i_feat[iid])
-            """
+            
+            trying:
             i_batch.append(self.i_feat['image_id'][iid])
+            """
+            i_batch.append(self.i_feat[iid]['features'])
 
         self.batch_ptr += self.bsize
         q_batch = np.asarray(q_batch)   # (batch, seqlen)

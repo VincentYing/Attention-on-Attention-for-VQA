@@ -14,6 +14,9 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 
 import numpy as np
+from itertools import chain
+import matplotlib.pyplot as plt
+
 
 from loader import Data_loader
 
@@ -142,8 +145,10 @@ def val(args):
         i_batch = Variable(torch.from_numpy(i_batch))
         q_batch, i_batch = q_batch.cuda(), i_batch.cuda()
 
-        # Do one model forward and optimize
+        # Do one model forward
         output = model(q_batch, i_batch)
+
+        # Do evaluation
         _, ix = output.data.max(1)
         for i, qid in enumerate(a_batch):
             result.append({
@@ -177,13 +182,14 @@ def train(args):
     print ('Parameters:\n\tvocab size: %d\n\tembedding dim: %d\n\tK: %d\n\tfeature dim: %d\
             \n\thidden dim: %d\n\toutput dim: %d' % (loader.q_words, args.emb, loader.K, loader.feat_dim,
                 args.hid, loader.n_answers))
+    print('Loading data for validation ')
+    # batch_size=0 is a special case to process all data
+    validation_loader = Data_loader(batch_size=0, emb_dim=args.emb, multilabel=args.multilabel,
+                         train=False, val=True, test=False)
 
 
-
-
-    print ('Initializing model')
-
-    # chose model & build its graph, Model chosen above in global variable
+    # Chose model & build its graph, Model chosen above in global variable
+    print('Initializing model')
     model = Model_Variable(vocab_size=loader.q_words,
                   emb_dim=args.emb,
                   K=loader.K,
@@ -191,17 +197,22 @@ def train(args):
                   hid_dim=args.hid,
                   out_dim=loader.n_answers,
                   pretrained_wemb=loader.pretrained_wemb)
-    
+
+    # Classification and Loss Function
     if args.multilabel:
         criterion = nn.BCEWithLogitsLoss()
     else:
         criterion = nn.CrossEntropyLoss()
-    
+
+
     # Move it to GPU
     model = model.cuda()
     criterion = criterion.cuda()
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
+    """
+    optimizer = torch.optim.Adamax(model.parameters())
+    """
 
     # Continue training from saved model
     if args.modelpath and os.path.isfile(args.modelpath):
@@ -212,9 +223,19 @@ def train(args):
 
     # Training script 
     print ('Start training.')
+    train_loss_split = [] # will be a list of lists => [ epoch1[], epoch2[], ...]
+    val_loss_per_epoch = []
+    train_accuracy_split = []  # will be a list of lists => [ epoch1[], epoch2[], ...]
+    val_accuracy_per_epoch = []
+
+    """
+    from itertools import chain
+    newlist = list(chain(*newlist))
+    """
+
     for ep in xrange(args.ep):
-        ep_loss = 0
-        ep_correct = 0
+        train_loss_split.append([])
+
         for step in xrange(loader.n_batches):
             # Batch preparation
             q_batch, a_batch, i_batch = loader.next_batch()
@@ -227,6 +248,15 @@ def train(args):
             output = model(q_batch, i_batch)
             loss = criterion(output, a_batch)
 
+            # compute gradient and do optim step
+            loss.backward()
+            """
+            nn.utils.clip_grad_norm(model.parameters(), 0.25)
+            """
+            optimizer.step()
+            optimizer.zero_grad()
+
+
             # Some stats
             _, oix = output.data.max(1)
             if args.multilabel:
@@ -234,45 +264,88 @@ def train(args):
             else:
                 aix = a_batch.data
             correct = torch.eq(oix, aix).sum()
-            ep_correct += correct
-            ep_loss += loss.data[0]
+            accuracy = correct*100/args.bsize
+
+            train_loss_split[ep].append(loss.data[0])
+            train_accuracy_split[ep].append(accuracy)
+
             if step % 40 == 0:
-                print ('Epoch %02d(%03d/%03d), loss: %.3f, correct: %3d / %d (%.2f%%)' %
+                print ('Epoch %02d(%03d/%03d), loss: %.3f, correct: %3d / %d, accuracy: (%.2f%%)' %
                         (ep+1, step, loader.n_batches, loss.data[0], correct, args.bsize, correct * 100 / args.bsize))
 
-            # compute gradient and do optim step
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+
+        """
+        Run Validation Here 
+        """
+        for step in xrange(loader.n_batches):
+            # All Validation set preparation
+            q, a, i = validation_loader.next_batch()
+            q = Variable(torch.from_numpy(q))
+            a = Variable(torch.from_numpy(a))
+            i = Variable(torch.from_numpy(i))
+            q, a, i = q.cuda(), a.cuda(), i.cuda()
+
+            # Do model forward
+            output = model(q, i)
+            loss = criterion(output, a)
 
 
+            # Some stats
+            _, oix = output.data.max(1)
+            if args.multilabel:
+                _, aix = a.data.max(1)
+            else:
+                aix = a.data
+            correct = torch.eq(oix, aix).sum()
+            accuracy = correct*100/validation_loader.bsize
+
+            val_loss_per_epoch[ep].append(loss.data[0])
+            val_accuracy_per_epoch[ep].append(accuracy)
 
 
         # Save model after every epoch
         tbs = {
             'epoch': ep + 1,
-            'loss': ep_loss / loader.n_batches,
-            'accuracy': ep_correct * 100 / (loader.n_batches * args.bsize), 
+            'train_loss': train_loss_split,
+            'train_accuracy': train_accuracy_split,
+            'val_loss': val_loss_per_epoch,
+            'val_accuracy':val_accuracy_per_epoch,
             'state_dict': model.state_dict(),
             'optimizer': optimizer.state_dict()
         }
         torch.save(tbs, 'save/model-' + str(ep+1) + '.pth.tar')
-        print ('Epoch %02d done, average loss: %.3f, average accuracy: %.2f%%' % (ep+1, ep_loss / loader.n_batches, ep_correct * 100 / (loader.n_batches * args.bsize)))
 
-
-
-
-
-
-
+        print (
+                'Epoch %02d done, average train loss: %.3f, average train accuracy: %.2f%%, average train loss: %.3f, average train accuracy: %.2f%%' %
+               (ep+1, sum(train_loss_split[ep])/len(train_loss_split[ep]), sum(train_accuracy_split[ep])/len(train_accuracy_split[ep]),
+                val_loss_per_epoch[ep], val_accuracy_per_epoch[ep])
+        )
 
 
         """
-        
-        Run Validation Here 
-        
-        
+        Plot Results Here 
         """
+        X_batch = np.arange(1,(args.ep+1),1/loader.n_batches)
+        X_batch_2 = np.arange(1, (args.ep + 1),1)
+        #X_epoch = range(1,(args.ep+1))
+
+        train_Y_batch_accuracies = list(chain(*train_accuracy_split))
+        train_Y_batch_loss = list(chain(*train_loss_split))
+
+        val_Y_accuracies = val_accuracy_per_epoch
+        val_Y_loss = val_loss_per_epoch
+
+        plt.plot(X_batch,train_Y_batch_accuracies, color='b', label ='train accuracy')
+        plt.plot(X_batch_2, val_Y_accuracies, color='g', label='val accuracy')
+        plt.show()
+
+        plt.plot(X_batch, train_Y_batch_loss, color='b', label='train loss')
+        plt.plot(X_batch_2, val_Y_loss, color='g', label='val loss')
+        plt.show()
+
+
+
+
 
 
 
