@@ -350,7 +350,7 @@ def train(args):
         plt.show()
 
         plt.plot(X2, train_Y_batch_loss, color='b', label='train loss')
-        plt.plot(X3, val_Y_loss, color='g', label='val loss')
+        plt.plot(X4, val_Y_loss, color='g', label='val loss')
         plt.show()
 
 
