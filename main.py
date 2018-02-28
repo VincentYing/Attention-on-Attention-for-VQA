@@ -182,12 +182,14 @@ def train(args):
     print ('Parameters:\n\tvocab size: %d\n\tembedding dim: %d\n\tK: %d\n\tfeature dim: %d\
             \n\thidden dim: %d\n\toutput dim: %d' % (loader.q_words, args.emb, loader.K, loader.feat_dim,
                 args.hid, loader.n_answers))
-    print('Loading data for validation ')
 
+
+    """
+    print('Loading data for validation ')
     # batch_size=0 is a special case to process all data
     validation_loader = Data_loader(batch_size=args.bsize, emb_dim=args.emb, multilabel=args.multilabel,
                          train=False, val=True, test=False)
-
+    """
 
     # Chose model & build its graph, Model chosen above in global variable
     print('Initializing model')
@@ -234,11 +236,11 @@ def train(args):
     newlist = list(chain(*newlist))
     """
 
-    for ep in xrange(args.ep):
+    for ep in range(args.ep):
         train_loss_split.append([])
         val_loss_per_epoch.append([])
 
-        for step in xrange(loader.n_batches):
+        for step in range(loader.n_batches):
             # Batch preparation
             q_batch, a_batch, i_batch = loader.next_batch()
             q_batch = Variable(torch.from_numpy(q_batch))
@@ -282,7 +284,7 @@ def train(args):
         val_loss_per_epoch.append([])
         val_accuracy_per_epoch.append([])
 
-        for step in xrange(validation_loader.n_batches):
+        for step in range(validation_loader.n_batches):
             # All Validation set preparation
             q, a, i = validation_loader.next_batch()
             q = Variable(torch.from_numpy(q))
