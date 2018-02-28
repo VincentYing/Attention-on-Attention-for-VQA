@@ -40,8 +40,9 @@ class Data_loader:
             
             if os.path.exists('data/train_coco_features_dic.p'):
                 self.i_feat = pickle.load(open( "data/train_coco_features_dic.p", "rb" )) 
-            else: 
-                iids = self.vqa[:]['image_id']
+            else:
+                print (self.vqa.keys) 
+                iids = self.vqa['image_id']
                 self.i_feat = np.load('data/coco_features.npy', encoding= 'latin1').item()
                 
                 #self.i_feat = self.i_feat['image_id' == iids]
