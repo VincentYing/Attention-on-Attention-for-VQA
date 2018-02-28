@@ -79,7 +79,7 @@ def process_q(q, phase):
 def tokenize_q(qa, phase):
     qas = len(qa)
     MyTokenizer = StanfordTokenizer()
-    for i, row in enumerate(tqdm(qa)):
+    for i, row in enumerate((qa)):
         row['question_toked'] = MyTokenizer.tokenize(row['question'].lower())[:14]
         if i % 50000 == 0:
             json.dump(qa, open('vqa_' + phase + '_toked_' + str(i) + '.json', 'w'))
@@ -89,7 +89,7 @@ def tokenize_q(qa, phase):
 def combine_qa(questions, annotations, phase):
     # 443757 questions
     data = []
-    for i, q in enumerate(tqdm(questions['questions'])):
+    for i, q in enumerate((questions['questions'])):
         row = {}
         # questions
         row['question'] = q['question']
