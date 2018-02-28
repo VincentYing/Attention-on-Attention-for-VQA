@@ -4,7 +4,7 @@ from __future__ import print_function
 
 import pdb
 import json
-import cPickle as pickle
+import _pickle as pickle
 
 import numpy as np
 
@@ -46,10 +46,29 @@ class Data_loader:
             self.i_feat = self.i_feat[ self.i_feat['image_id'].isin(iids)]
             """
             # should have more efficient way to load image feature
-            self.i_feat = np.load('data/coco_features.npy').item()
+            self.i_feat = np.load('data/coco_features.npy', encoding= 'latin1').item()
 
 
         elif val:
+            """
+            
+            
+             q_dict = pickle.load(open('data/train_q_dict.p', 'rb'))
+            self.q_itow = q_dict['itow']
+            self.q_wtoi = q_dict['wtoi']
+            self.q_words = len(self.q_itow) + 1
+
+            a_dict = pickle.load(open('data/train_a_dict.p', 'rb'))
+            self.a_itow = a_dict['itow']
+            self.a_wtoi = a_dict['wtoi']
+            self.n_answers = len(self.a_itow) + 1
+
+            
+            
+            """
+
+
+
             q_dict = pickle.load(open('data/val_q_dict.p', 'rb'))
             self.q_itow = q_dict['itow']
             self.q_wtoi = q_dict['wtoi']
@@ -59,6 +78,7 @@ class Data_loader:
             self.a_itow = a_dict['itow']
             self.a_wtoi = a_dict['wtoi']
             self.n_answers = len(self.a_itow) + 1
+
 
             self.vqa = json.load(open('data/vqa_val_final.json'))
             self.n_questions = len(self.vqa)
@@ -76,7 +96,7 @@ class Data_loader:
             """
 
             # should have more efficient way to load image feature
-            self.i_feat = np.load('data/coco_features.npy').item()
+            self.i_feat = np.load('data/coco_features.npy', encoding= 'latin1').item()
 
 
         elif test:
