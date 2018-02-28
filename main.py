@@ -71,7 +71,7 @@ def test(args):
         raise SystemExit('Need to provide model path.')
 
     result = []
-    for step in xrange(loader.n_batches):
+    for step in range(loader.n_batches):
         # Batch preparation
         q_batch, a_batch, i_batch = loader.next_batch()
         q_batch = Variable(torch.from_numpy(q_batch))
@@ -138,7 +138,7 @@ def val(args):
         raise SystemExit('Need to provide model path.')
 
     result = []
-    for step in xrange(loader.n_batches):
+    for step in range(loader.n_batches):
         # Batch preparation
         q_batch, a_batch, i_batch = loader.next_batch()
         q_batch = Variable(torch.from_numpy(q_batch))

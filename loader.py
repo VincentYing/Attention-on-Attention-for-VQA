@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import os
 import pdb
 import json
 import _pickle as pickle
@@ -33,20 +34,26 @@ class Data_loader:
             self.vqa = json.load(open('data/vqa_train_final.json'))
             self.n_questions = len(self.vqa)
 
-            """
+
             
-            HOW DO WE SPLIT coco_features.npy
+            #HOW DO WE SPLIT coco_features.npy
             
+            if os.path.exists('data/train_coco_features_dic.p'):
+                self.i_feat = pickle.load(open( "data/train_coco_features_dic.p", "rb" )) 
+            else: 
+                iids = self.vqa[:]['image_id']
+                self.i_feat = np.load('data/coco_features.npy', encoding= 'latin1').item()
+                
+                #self.i_feat = self.i_feat['image_id' == iids]
+                #self.i_feat = self.i_feat[ self.i_feat['image_id'].isin(iids)]
+                self.i_feat = {key: self.i_feat[key] for key in self.i_feat.keys() & iids}
+                
+                pickle.dump(self.i_feat, open( "data/train_coco_features_dic.p", "wb"))
             
-            iids = self.vqa[:]['image_id']
-            self.i_feat = np.load('data/coco_features.npy').item()
-            self.i_feat = self.i_feat['image_id' == iids]
-            
-            self.i_feat = self.i_feat[ self.i_feat['image_id'].isin(iids)]
-            """
+
 
             # should have more efficient way to load image feature
-            self.i_feat = np.load('data/coco_features.npy', encoding= 'latin1').item()
+            #self.i_feat = np.load('data/coco_features.npy', encoding= 'latin1').item()
 
         elif val:
             q_dict = pickle.load(open('data/val_q_dict.p', 'rb'))
@@ -63,20 +70,24 @@ class Data_loader:
             self.vqa = json.load(open('data/vqa_val_final.json'))
             self.n_questions = len(self.vqa)
 
-            """
 
-            HOW DO WE SPLIT coco_features.npy
+            #HOW DO WE SPLIT coco_features.npy
 
+            if os.path.exists('data/val_coco_features_dic.p'):
+                self.i_feat = pickle.load(open( "data/val_coco_features_dic.p", "rb" )) 
+            else: 
+                iids = self.vqa[:]['image_id']
+                self.i_feat = np.load('data/coco_features.npy', encoding= 'latin1').item()
+                
+                #self.i_feat = self.i_feat['image_id' == iids]
+                #self.i_feat = self.i_feat[ self.i_feat['image_id'].isin(iids)]
+                self.i_feat = {key: self.i_feat[key] for key in self.i_feat.keys() & iids}
+                
+                pickle.dump(self.i_feat, open( "data/val_coco_features_dic.p", "wb"))
 
-            iids = self.vqa[:]['image_id']
-            self.i_feat = np.load('data/coco_features.npy').item()
-            self.i_feat = self.i_feat['image_id' == iids]
-            
-            self.i_feat = self.i_feat[ self.i_feat['image_id'].isin(iids)]
-            """
 
             # should have more efficient way to load image feature
-            self.i_feat = np.load('data/coco_features.npy', encoding= 'latin1').item()
+            #self.i_feat = np.load('data/coco_features.npy', encoding= 'latin1').item()
 
         elif test:
             q_dict = pickle.load(open('data/test_q_dict.p', 'rb'))
@@ -155,7 +166,7 @@ class Data_loader:
         q_batch = []
         a_batch = []
         i_batch = []
-        for b in xrange(self.bsize):
+        for b in range(self.bsize):
             # question batch
             q = [0] * self.seqlen
             for i, w in enumerate(self.vqa[self.batch_ptr + b]['question_toked']):
