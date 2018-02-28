@@ -35,16 +35,24 @@ class BaseLineModel(nn.Module): #Change the name for each model
         self.hid_dim = hid_dim
         self.out_dim = out_dim
 
-        #question encoding
-        self.wembed = nn.Embedding(self.vocab_size, self.emb_dim)
+
+        """
+        #question encoding seperate embedding for each word
+        self.wembed = nn.Embedding(num_embeddings= self.vocab_size, embedding_dim= self.emb_dim)
         # initialize word embedding layer weights
         self.wembed.weight.data.copy_(torch.from_numpy(pretrained_wemb))
+        """
 
 
-        #First 2 layer network, with outputlayer [for attention]
+        # question encoding seperate embedding for each word
+        self.wembed_BOG = nn.EmbeddingBag(num_embeddings=self.vocab_size, embedding_dim= self.emb_dim, mode= 'mean')
+        # initialize word embedding layer weights
+        self.wembed_BOG.weight.data.copy_(torch.from_numpy(pretrained_wemb))
+
+
+        #First 1 layer network, with outputlayer [for attention]
         self.NN1_W1 = nn.Linear(in_features=self.emb_dim + self.feat_dim, out_features=self.hid_dim, bias=True)
-        self.NN1_W2 = nn.Linear(in_features=self.hid_dim, out_features=self.hid_dim, bias=True)
-        self.NN1_W3 = nn.Linear(in_features=self.hid_dim, out_features=1, bias=True)
+        self.NN1_W2 = nn.Linear(in_features=self.hid_dim, out_features=1, bias=True)
 
         #Second 2 layer network, with outputlayer [for answer]
         self.NN2_W1 = nn.Linear(in_features=self.emb_dim + self.feat_dim, out_features=self.hid_dim, bias=True)
@@ -85,9 +93,11 @@ class BaseLineModel(nn.Module): #Change the name for each model
         question -> shape (batch, seqlen)
         image -> shape (batch, K, feat_dim)
         """
-        # get question encoding, then sum together: Bag of Words
-        emb = self.wembed(question)                         # (batch, seqlen, emb_dim)
-        q_enc = torch.sum(input=emb, dim=1, keepdim=False)  # (batch, emb_dim)
+        # Get question encoding (Words averaged) Bag of Words
+        q_enc = self.wembed_BOG(question)        # (batch, emb_dim)
+
+        # Get word embedding and fead to GRU to question embedding
+        #emb = self.wembed(question)                             # (batch, seqlen, emb_dim)
 
         # image encoding
         image = F.normalize(image, -1)  # (batch, K, feat_dim)
@@ -95,9 +105,8 @@ class BaseLineModel(nn.Module): #Change the name for each model
         # image attention
         q_enc_reshape = q_enc.repeat(1, self.K).view(-1, self.K, self.emb_dim)  # (batch, K, emb_dim)
         concat_1 = torch.cat((image, q_enc_reshape), -1)        # (batch, K, feat_dim + emb_dim)
-        concat_1 = F.tanh(self.NN1_W1(concat_1))                # (batch, K, hid_dim)
-        concat_1 = F.tanh(self.NN1_W2(concat_1))                # (batch, K, hid_dim)
-        attention = self.NN1_W3(concat_1)                       # (batch, K, 1)
+        concat_1 = F.relu(self.NN1_W1(concat_1))                # (batch, K, hid_dim)
+        attention = self.NN1_W2(concat_1)                       # (batch, K, 1)
         attention = F.softmax(attention.squeeze())              # (batch, K)
 
         # get weighted image vector
@@ -105,8 +114,8 @@ class BaseLineModel(nn.Module): #Change the name for each model
 
         # Output
         concat_2 = torch.cat((context_vec, q_enc), -1)      # (batch, feat_dim + emb_dim)
-        concat_2 = F.tanh(self.NN2_W1(concat_2))            # (batch, hid_dim)
-        concat_2 = F.tanh(self.NN2_W2(concat_2))            # (batch, hid_dim)
+        concat_2 = F.relu(self.NN2_W1(concat_2))            # (batch, hid_dim)
+        concat_2 = F.relu(self.NN2_W2(concat_2))            # (batch, hid_dim)
         output = self.NN2_W3(concat_2)                      # (batch, out_dim)
 
         """

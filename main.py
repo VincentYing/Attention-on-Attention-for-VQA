@@ -183,6 +183,7 @@ def train(args):
             \n\thidden dim: %d\n\toutput dim: %d' % (loader.q_words, args.emb, loader.K, loader.feat_dim,
                 args.hid, loader.n_answers))
     print('Loading data for validation ')
+
     # batch_size=0 is a special case to process all data
     validation_loader = Data_loader(batch_size=args.bsize, emb_dim=args.emb, multilabel=args.multilabel,
                          train=False, val=True, test=False)
@@ -223,10 +224,10 @@ def train(args):
 
     # Training script 
     print ('Start training.')
-    train_loss_split = [] # will be a list of lists => [ epoch1[], epoch2[], ...]
-    val_loss_per_epoch = [] # will be a list of lists => [ epoch1[], epoch2[], ...]
-    train_accuracy_split = []  # will be a list of lists => [ epoch1[], epoch2[], ...]
-    val_accuracy_per_epoch = []
+    train_loss_split = []       # will be a list of lists => [ epoch1[], epoch2[], ...]
+    val_loss_per_epoch = []     # will be a list of lists => [ epoch1[], epoch2[], ...]
+    train_accuracy_split = []   # will be a list of lists => [ epoch1[], epoch2[], ...]
+    val_accuracy_per_epoch = [] # will be a list of lists => [ epoch1[], epoch2[], ...]
 
     """
     from itertools import chain

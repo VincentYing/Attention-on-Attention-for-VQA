@@ -19,7 +19,6 @@ class Data_loader:
         self.test = test
         self.val = val
 
-
         if train:
             q_dict = pickle.load(open('data/train_q_dict.p', 'rb'))
             self.q_itow = q_dict['itow']
@@ -45,30 +44,11 @@ class Data_loader:
             
             self.i_feat = self.i_feat[ self.i_feat['image_id'].isin(iids)]
             """
+
             # should have more efficient way to load image feature
             self.i_feat = np.load('data/coco_features.npy', encoding= 'latin1').item()
 
-
         elif val:
-            """
-            
-            
-             q_dict = pickle.load(open('data/train_q_dict.p', 'rb'))
-            self.q_itow = q_dict['itow']
-            self.q_wtoi = q_dict['wtoi']
-            self.q_words = len(self.q_itow) + 1
-
-            a_dict = pickle.load(open('data/train_a_dict.p', 'rb'))
-            self.a_itow = a_dict['itow']
-            self.a_wtoi = a_dict['wtoi']
-            self.n_answers = len(self.a_itow) + 1
-
-            
-            
-            """
-
-
-
             q_dict = pickle.load(open('data/val_q_dict.p', 'rb'))
             self.q_itow = q_dict['itow']
             self.q_wtoi = q_dict['wtoi']
@@ -98,7 +78,6 @@ class Data_loader:
             # should have more efficient way to load image feature
             self.i_feat = np.load('data/coco_features.npy', encoding= 'latin1').item()
 
-
         elif test:
             q_dict = pickle.load(open('data/test_q_dict.p', 'rb'))
             self.q_itow = q_dict['itow']
@@ -115,7 +94,6 @@ class Data_loader:
 
             # should have more efficient way to load image feature
             self.i_feat = np.load('data/coco_features_test.npy').item()
-
 
         print ('Loading done')
 
@@ -154,9 +132,8 @@ class Data_loader:
         np.random.shuffle(self.vqa)
 
 
-
     """
-    LOOKS Hella Slow 
+    LOOKS Slow 
     
     Investigate: 
     - Use range() objects to speed up
@@ -203,15 +180,6 @@ class Data_loader:
                         a_batch.append(self.a_wtoi[self.vqa[self.batch_ptr + b]['answer']])
                     except:
                         a_batch.append(0)
-
-
-            elif self.val:
-                # in validation phase return question id instead of answer to write to a json file
-                # you could also modify this to calculate the accuracy
-                a_batch.append(self.vqa[self.batch_ptr + b]['question_id'])
-            elif self.test:
-                #do stuff
-                print ('test')
 
             # image batch
             iid = self.vqa[self.batch_ptr + b]['image_id'] # Get the ID corresponding to the image needed
