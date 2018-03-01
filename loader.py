@@ -38,7 +38,7 @@ class Data_loader:
 
             iids = [x['image_id'] for x in self.vqa]
             self.i_feat = np.load('data/coco_features.npy', encoding= 'latin1').item()
-            self.i_feat = {key: self.i_feat[key] for key in self.i_feat.keys() & iids}
+            self.i_feat = {key: self.i_feat[key] for key in self.i_feat.keys() if key in iids}
 
         elif val:
             q_dict = pickle.load(open('data/val_q_dict.p', 'rb'))
@@ -57,7 +57,7 @@ class Data_loader:
 
             iids =  [x['image_id'] for x in self.vqa]
             self.i_feat = np.load('data/coco_features.npy', encoding= 'latin1').item()
-            self.i_feat = {key: self.i_feat[key] for key in self.i_feat.keys() & iids}
+            self.i_feat = {key: self.i_feat[key] for key in self.i_feat.keys() if key in iids}
 
         elif test:
             q_dict = pickle.load(open('data/test_q_dict.p', 'rb'))
