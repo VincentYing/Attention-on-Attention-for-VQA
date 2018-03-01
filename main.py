@@ -184,12 +184,11 @@ def train(args):
                 args.hid, loader.n_answers))
 
 
-    """
     print('Loading data for validation ')
     # batch_size=0 is a special case to process all data
     validation_loader = Data_loader(batch_size=args.bsize, emb_dim=args.emb, multilabel=args.multilabel,
                          train=False, val=True, test=False)
-    """
+
 
     # Chose model & build its graph, Model chosen above in global variable
     print('Initializing model')
@@ -342,8 +341,8 @@ def train(args):
         val_Y_accuracies = list(chain(*val_accuracy_per_epoch))
         val_Y_loss = list(chain(*val_loss_per_epoch))
 
-        X1 = np.arange(0,len(train_Y_batch_accuracies))
-        X2 = np.arange(0,len(train_Y_batch_loss))
+        X1 = np.arange(0, len(train_Y_batch_accuracies))
+        X2 = np.arange(0, len(train_Y_batch_loss))
         X3 = np.arange(0, len(val_Y_accuracies))
         X4 = np.arange(0, len(val_Y_loss))
 
