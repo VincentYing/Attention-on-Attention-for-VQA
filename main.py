@@ -17,12 +17,8 @@ import numpy as np
 from itertools import chain
 import matplotlib.pyplot as plt
 
-
 from loader import Data_loader
 
-"""
-Import Models  
-"""
 from model import Model
 from BaseLineModel import BaseLineModel
 from Model_1 import Model_1
@@ -137,6 +133,10 @@ def val(args):
     else:
         raise SystemExit('Need to provide model path.')
 
+
+
+
+
     result = []
     for step in range(loader.n_batches):
         # Batch preparation
@@ -183,7 +183,6 @@ def train(args):
             \n\thidden dim: %d\n\toutput dim: %d' % (loader.q_words, args.emb, loader.K, loader.feat_dim,
                 args.hid, loader.n_answers))
 
-
     print('Loading data for validation ')
     # batch_size=0 is a special case to process all data
     validation_loader = Data_loader(batch_size=args.bsize, emb_dim=args.emb, multilabel=args.multilabel,
@@ -206,11 +205,9 @@ def train(args):
     else:
         criterion = nn.CrossEntropyLoss()
 
-
     # Move it to GPU
     model = model.cuda()
     criterion = criterion.cuda()
-
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     """
     optimizer = torch.optim.Adamax(model.parameters())
@@ -224,16 +221,11 @@ def train(args):
         optimizer.load_state_dict(ckpt['optimizer'])
 
     # Training script 
-    print ('Start training.')
+    print('Start training.')
     train_loss_split = []       # will be a list of lists => [ epoch1[], epoch2[], ...]
     val_loss_per_epoch = []     # will be a list of lists => [ epoch1[], epoch2[], ...]
     train_accuracy_split = []   # will be a list of lists => [ epoch1[], epoch2[], ...]
     val_accuracy_per_epoch = [] # will be a list of lists => [ epoch1[], epoch2[], ...]
-
-    """
-    from itertools import chain
-    newlist = list(chain(*newlist))
-    """
 
     for ep in range(args.ep):
         train_loss_split.append([])
@@ -345,7 +337,6 @@ def train(args):
         X2 = np.arange(0, len(train_Y_batch_loss))
         X3 = np.arange(0, len(val_Y_accuracies))
         X4 = np.arange(0, len(val_Y_loss))
-
 
         plt.plot(X1,train_Y_batch_accuracies, color='b', label ='train accuracy')
         plt.plot(X3, val_Y_accuracies, color='g', label='val accuracy')

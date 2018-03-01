@@ -73,7 +73,6 @@ class Data_loader:
             self.vqa = json.load(open('data/vqa_test_final.json'))
             self.n_questions = len(self.vqa)
 
-            # should have more efficient way to load image feature
             self.i_feat = np.load('data/coco_features_test.npy').item()
 
         print ('Loading done')
@@ -82,13 +81,12 @@ class Data_loader:
         if self.bsize == 0:
             self.bsize = self.n_questions
         self.n_batches = self.n_questions // self.bsize
-        #self.K = self.i_feat['features'].values()[0].shape[0]
-        #self.feat_dim = self.i_feat['features'].values()[0].shape[1]
+        # self.K = self.i_feat['features'].values()[0].shape[0]
+        # self.feat_dim = self.i_feat['features'].values()[0].shape[1]
         self.K = 36
         self.feat_dim = 2048
         self.init_pretrained_wemb(emb_dim)
         self.epoch_reset()
-
 
 
     def init_pretrained_wemb(self, emb_dim):
@@ -111,11 +109,9 @@ class Data_loader:
         self.pretrained_wemb = embedding_mat
 
 
-
     def epoch_reset(self):
         self.batch_ptr = 0
         np.random.shuffle(self.vqa)
-
 
 
     """
@@ -133,11 +129,9 @@ class Data_loader:
         answer -> (batch, n_answers) or (batch, )
         image feature -> (batch, feat_dim)
         """
-
         # Only does training on full batches
         if self.batch_ptr + self.bsize >= self.n_questions:
             self.epoch_reset()
-
         q_batch = []
         a_batch = []
         i_batch = []
@@ -151,20 +145,19 @@ class Data_loader:
                     q[i] = 0    # validation questions may contain unseen word
             q_batch.append(q)
 
-            # answer or question id batch
-            if self.train:
-                # Soft answers
-                if self.multilabel:
-                    a = np.zeros(self.n_answers, dtype=np.float32)
-                    for w, c in self.vqa[self.batch_ptr + b]['answers_w_scores']:
-                        a[self.a_wtoi[w]] = c
-                    a_batch.append(a)
-                # Hard answers
-                else:
-                    try:
-                        a_batch.append(self.a_wtoi[self.vqa[self.batch_ptr + b]['answer']])
-                    except:
-                        a_batch.append(0)
+            # answer batch
+            # Soft answers
+            if self.multilabel:
+                a = np.zeros(self.n_answers, dtype=np.float32)
+                for w, c in self.vqa[self.batch_ptr + b]['answers_w_scores']:
+                    a[self.a_wtoi[w]] = c
+                a_batch.append(a)
+            # Hard answers
+            else:
+                try:
+                    a_batch.append(self.a_wtoi[self.vqa[self.batch_ptr + b]['answer']])
+                except:
+                    a_batch.append(0)
 
             # image batch
             iid = self.vqa[self.batch_ptr + b]['image_id'] # Get the ID corresponding to the image needed
@@ -172,7 +165,7 @@ class Data_loader:
 
         self.batch_ptr += self.bsize
         q_batch = np.asarray(q_batch)   # (batch, seqlen)
-        a_batch = np.asarray(a_batch)   # (batch, n_answers) or (batch, )
+        a_batch = np.asarray(a_batch)   # (batch, n_answers)
         i_batch = np.asarray(i_batch)   # (batch, feat_dim)
 
         return q_batch, a_batch, i_batch
