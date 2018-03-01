@@ -20,6 +20,24 @@ class Data_loader:
         self.test = test
         self.val = val
 
+        if not (os.path.exists('data/train_coco_features_dic.p') or os.path.exists('data/val_coco_features_dic.p')):
+            list_t = json.load(open('data/vqa_train_final.json'))
+            iids_t = [x['image_id'] for x in list_t]
+
+            self.i_feat = np.load('data/coco_features.npy', encoding='latin1').item()
+
+            dict_ = {key: self.i_feat[key] for key in iids_t & self.i_feat.keys()}
+            pickle.dump(dict_, open("data/train_coco_features_dic.p", "wb"))
+
+            list_v = json.load(open('data/vqa_val_final.json'))
+            iids_v = [x['image_id'] for x in list_v]
+
+            dict_ = {key: self.i_feat[key] for key in iids_v & self.i_feat.keys()}
+            pickle.dump(dict_, open("data/val_coco_features_dic.p", "wb"))
+
+
+
+
         if train:
             q_dict = pickle.load(open('data/train_q_dict.p', 'rb'))
             self.q_itow = q_dict['itow']
@@ -31,6 +49,7 @@ class Data_loader:
             self.a_wtoi = a_dict['wtoi']
             self.n_answers = len(self.a_itow) + 1
 
+            # self.vqa List of Dictionaries
             self.vqa = json.load(open('data/vqa_train_final.json'))
             self.n_questions = len(self.vqa)
 
@@ -67,7 +86,7 @@ class Data_loader:
             self.a_wtoi = a_dict['wtoi']
             self.n_answers = len(self.a_itow) + 1
 
-
+            # self.vqa List of Dictionaries
             self.vqa = json.load(open('data/vqa_val_final.json'))
             self.n_questions = len(self.vqa)
 
