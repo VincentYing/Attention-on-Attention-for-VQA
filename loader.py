@@ -20,7 +20,7 @@ class Data_loader:
         self.test = test
         self.val = val
 
-        if not (os.path.exists('data/train_coco_features_dic.p') or os.path.exists('data/val_coco_features_dic.p')):
+        if not os.path.exists('data/train_coco_features_dic.p') or not os.path.exists('data/val_coco_features_dic.p'):
             self.i_feat = np.load('data/coco_features.npy', encoding='latin1').item()
 
             list_t = json.load(open('data/vqa_train_final.json'))
