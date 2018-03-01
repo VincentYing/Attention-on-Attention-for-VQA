@@ -21,10 +21,10 @@ class Data_loader:
         self.val = val
 
         if not (os.path.exists('data/train_coco_features_dic.p') or os.path.exists('data/val_coco_features_dic.p')):
+            self.i_feat = np.load('data/coco_features.npy', encoding='latin1').item()
+
             list_t = json.load(open('data/vqa_train_final.json'))
             iids_t = [x['image_id'] for x in list_t]
-
-            self.i_feat = np.load('data/coco_features.npy', encoding='latin1').item()
 
             dict_ = {key: self.i_feat[key] for key in iids_t & self.i_feat.keys()}
             pickle.dump(dict_, open("data/train_coco_features_dic.p", "wb"))
@@ -34,9 +34,6 @@ class Data_loader:
 
             dict_ = {key: self.i_feat[key] for key in iids_v & self.i_feat.keys()}
             pickle.dump(dict_, open("data/val_coco_features_dic.p", "wb"))
-
-
-
 
         if train:
             q_dict = pickle.load(open('data/train_q_dict.p', 'rb'))
@@ -53,27 +50,13 @@ class Data_loader:
             self.vqa = json.load(open('data/vqa_train_final.json'))
             self.n_questions = len(self.vqa)
 
-
-            
-            #HOW DO WE SPLIT coco_features.npy
-            
             if os.path.exists('data/train_coco_features_dic.p'):
                 self.i_feat = pickle.load(open( "data/train_coco_features_dic.p", "rb" )) 
             else:
-
                 iids = [x['image_id'] for x in self.vqa]
                 self.i_feat = np.load('data/coco_features.npy', encoding= 'latin1').item()
-                
-                #self.i_feat = self.i_feat['image_id' == iids]
-                #self.i_feat = self.i_feat[ self.i_feat['image_id'].isin(iids)]
                 self.i_feat = {key: self.i_feat[key] for key in self.i_feat.keys() & iids}
-                
                 pickle.dump(self.i_feat, open( "data/train_coco_features_dic.p", "wb"))
-            
-
-
-            # should have more efficient way to load image feature
-            #self.i_feat = np.load('data/coco_features.npy', encoding= 'latin1').item()
 
         elif val:
             q_dict = pickle.load(open('data/val_q_dict.p', 'rb'))
@@ -90,24 +73,13 @@ class Data_loader:
             self.vqa = json.load(open('data/vqa_val_final.json'))
             self.n_questions = len(self.vqa)
 
-
-            #HOW DO WE SPLIT coco_features.npy
-
             if os.path.exists('data/val_coco_features_dic.p'):
                 self.i_feat = pickle.load(open( "data/val_coco_features_dic.p", "rb" )) 
             else: 
                 iids =  [x['image_id'] for x in self.vqa]
                 self.i_feat = np.load('data/coco_features.npy', encoding= 'latin1').item()
-                
-                #self.i_feat = self.i_feat['image_id' == iids]
-                #self.i_feat = self.i_feat[ self.i_feat['image_id'].isin(iids)]
                 self.i_feat = {key: self.i_feat[key] for key in self.i_feat.keys() & iids}
-                
                 pickle.dump(self.i_feat, open( "data/val_coco_features_dic.p", "wb"))
-
-
-            # should have more efficient way to load image feature
-            #self.i_feat = np.load('data/coco_features.npy', encoding= 'latin1').item()
 
         elif test:
             q_dict = pickle.load(open('data/test_q_dict.p', 'rb'))
@@ -139,6 +111,8 @@ class Data_loader:
         self.init_pretrained_wemb(emb_dim)
         self.epoch_reset()
 
+
+
     def init_pretrained_wemb(self, emb_dim):
         """From blog.keras.io"""
         embeddings_index = {}
@@ -158,9 +132,12 @@ class Data_loader:
         
         self.pretrained_wemb = embedding_mat
 
+
+
     def epoch_reset(self):
         self.batch_ptr = 0
         np.random.shuffle(self.vqa)
+
 
 
     """
@@ -196,7 +173,6 @@ class Data_loader:
                     q[i] = 0    # validation questions may contain unseen word
             q_batch.append(q)
 
-
             # answer or question id batch
             if self.train:
                 # Soft answers
@@ -205,8 +181,8 @@ class Data_loader:
                     for w, c in self.vqa[self.batch_ptr + b]['answers_w_scores']:
                         a[self.a_wtoi[w]] = c
                     a_batch.append(a)
+                # Hard answers
                 else:
-                # Hard aniswers
                     try:
                         a_batch.append(self.a_wtoi[self.vqa[self.batch_ptr + b]['answer']])
                     except:
@@ -214,18 +190,11 @@ class Data_loader:
 
             # image batch
             iid = self.vqa[self.batch_ptr + b]['image_id'] # Get the ID corresponding to the image needed
-            """
-            Original:
-            i_batch.append(self.i_feat[iid])
-            
-            trying:
-            i_batch.append(self.i_feat['image_id'][iid])
-            """
             i_batch.append(self.i_feat[iid]['features'])
 
         self.batch_ptr += self.bsize
         q_batch = np.asarray(q_batch)   # (batch, seqlen)
         a_batch = np.asarray(a_batch)   # (batch, n_answers) or (batch, )
         i_batch = np.asarray(i_batch)   # (batch, feat_dim)
-        return q_batch, a_batch, i_batch
 
+        return q_batch, a_batch, i_batch
