@@ -20,25 +20,6 @@ class Data_loader:
         self.test = test
         self.val = val
 
-        self.i_feat = np.load('data/coco_features.npy', encoding='latin1').item()
-
-        list_t = json.load(open('data/vqa_train_final.json'))
-        iids_t = [x['image_id'] for x in list_t]
-
-        dict_ = {key: self.i_feat[key] for key in iids_t & self.i_feat.keys()}
-        #pickle.dump(dict_, open("data/train_coco_features_dic.p", "wb"))
-        p1 = pickle.Pickler(open("data/train_coco_features_dic.p", "wb"))
-        p1.fast = True
-        p1.dump(dict_)
-
-        list_v = json.load(open('data/vqa_val_final.json'))
-        iids_v = [x['image_id'] for x in list_v]
-
-        dict_ = {key: self.i_feat[key] for key in iids_v & self.i_feat.keys()}
-        #pickle.dump(dict_, open("data/val_coco_features_dic.p", "wb"))
-        p2 = pickle.Pickler(open("data/val_coco_features_dic.p", "wb"))
-        p2.fast = True
-        p2.dump(dict_)
 
         if train:
             q_dict = pickle.load(open('data/train_q_dict.p', 'rb'))
@@ -55,13 +36,9 @@ class Data_loader:
             self.vqa = json.load(open('data/vqa_train_final.json'))
             self.n_questions = len(self.vqa)
 
-            if os.path.exists('data/train_coco_features_dic.p'):
-                self.i_feat = pickle.load(open( "data/train_coco_features_dic.p", "rb" )) 
-            else:
-                iids = [x['image_id'] for x in self.vqa]
-                self.i_feat = np.load('data/coco_features.npy', encoding= 'latin1').item()
-                self.i_feat = {key: self.i_feat[key] for key in self.i_feat.keys() & iids}
-                pickle.dump(self.i_feat, open( "data/train_coco_features_dic.p", "wb"))
+            iids = [x['image_id'] for x in self.vqa]
+            self.i_feat = np.load('data/coco_features.npy', encoding= 'latin1').item()
+            self.i_feat = {key: self.i_feat[key] for key in self.i_feat.keys() & iids}
 
         elif val:
             q_dict = pickle.load(open('data/val_q_dict.p', 'rb'))
@@ -78,13 +55,9 @@ class Data_loader:
             self.vqa = json.load(open('data/vqa_val_final.json'))
             self.n_questions = len(self.vqa)
 
-            if os.path.exists('data/val_coco_features_dic.p'):
-                self.i_feat = pickle.load(open( "data/val_coco_features_dic.p", "rb" )) 
-            else: 
-                iids =  [x['image_id'] for x in self.vqa]
-                self.i_feat = np.load('data/coco_features.npy', encoding= 'latin1').item()
-                self.i_feat = {key: self.i_feat[key] for key in self.i_feat.keys() & iids}
-                pickle.dump(self.i_feat, open( "data/val_coco_features_dic.p", "wb"))
+            iids =  [x['image_id'] for x in self.vqa]
+            self.i_feat = np.load('data/coco_features.npy', encoding= 'latin1').item()
+            self.i_feat = {key: self.i_feat[key] for key in self.i_feat.keys() & iids}
 
         elif test:
             q_dict = pickle.load(open('data/test_q_dict.p', 'rb'))
