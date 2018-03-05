@@ -66,17 +66,16 @@ class BaseLineModel(nn.Module): #Change the name for each model
         attention = F.softmax(attention, dim=1)                 # (batch, K, 1)
         print(attention.size(), "(batch, K, 1)")
 
-
+        """
         # get weighted image vector
         attention.squeeze()                                     # (batch, K)
         print(attention.size(), "(batch, K)")
-
         context_vec = torch.bmm(attention.unsqueeze(1), image).squeeze()  # (batch, feat_dim): (batch, 1, K) x (batch, K, feat_dim)
         print(context_vec.size(), "(batch, feat_dim)")
+        """
 
-        """
         context_vec = (attention * image).sum(1) # [batch, v_dim]           # (batch, feat_dim): (batch, K, 1) * (batch, K, feat_dim)
-        """
+        print(context_vec.size(),  "(batch, feat_dim)")
 
         # Output
         concat_2 = torch.cat((context_vec, q_enc), -1)      # (batch, feat_dim + emb_dim)

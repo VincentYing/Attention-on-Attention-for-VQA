@@ -185,8 +185,7 @@ def train(args):
 
     print('Loading data for validation ')
     # batch_size=0 is a special case to process all data
-    validation_loader = Data_loader(batch_size=args.bsize, emb_dim=args.emb, multilabel=args.multilabel,
-                         train=False, val=True, test=False)
+    #validation_loader = Data_loader(batch_size=args.bsize, emb_dim=args.emb, multilabel=args.multilabel, train=False, val=True, test=False)
 
 
     # Chose model & build its graph, Model chosen above in global variable
