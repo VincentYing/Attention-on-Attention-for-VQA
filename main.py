@@ -133,10 +133,6 @@ def val(args):
     else:
         raise SystemExit('Need to provide model path.')
 
-
-
-
-
     result = []
     for step in range(loader.n_batches):
         # Batch preparation
@@ -228,7 +224,7 @@ def train(args):
 
     for ep in range(args.ep):
         train_loss_split.append([])
-        val_loss_per_epoch.append([])
+        train_accuracy_split.append([])
 
         for step in range(loader.n_batches):
             # Batch preparation
