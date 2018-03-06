@@ -32,7 +32,7 @@ Name: plot_results()
 
 Plots train & validation: loss, accuracy
 """
-def plot_resulst(train_accuracy, train_loss, val_accuracy_per_epoch, val_loss_per_epoch, batch_size, total_epochs):
+def plot_results(train_accuracy, train_loss, val_accuracy_per_epoch, val_loss_per_epoch, batch_size, total_epochs):
 
     train_Y_accuracies = [ sum(ep)/len(ep) for ep in train_accuracy]
     train_Y_loss = [ sum(ep)/len(ep) for ep in train_loss]
@@ -54,7 +54,7 @@ def plot_resulst(train_accuracy, train_loss, val_accuracy_per_epoch, val_loss_pe
     plt.xlabel('epochs')
     plt.ylabel('accuracy')
     plt.title('Train & Val Accuracy')
-    plt.show()
+    plt.savefig('save/batch_accuracy.png')
 
     plt.figure()
     plt.plot(X_Batch, train_Y_loss_batch, color='b', label='train loss')
@@ -64,7 +64,7 @@ def plot_resulst(train_accuracy, train_loss, val_accuracy_per_epoch, val_loss_pe
     plt.xlabel('epochs')
     plt.ylabel('loss')
     plt.title('Train & Val Loss')
-    plt.show()
+    plt.savefig('save/batch_loss.png')
 
 
 """
@@ -216,4 +216,4 @@ def train(args):
                 val_loss_per_epoch[ep], val_accuracy_per_epoch[ep])
         )
 
-        plot_resulst(train_accuracy_split, train_loss_split, val_accuracy_per_epoch, val_loss_per_epoch, loader.bsize, args.ep)
+        plot_results(train_accuracy_split, train_loss_split, val_accuracy_per_epoch, val_loss_per_epoch, loader.bsize, args.ep)

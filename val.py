@@ -17,7 +17,7 @@ import numpy as np
 from itertools import chain
 import matplotlib.pyplot as plt
 
-from train import train 
+from train import train
 from loader import Data_loader
 from Models import Model, BaseLine
 
@@ -27,8 +27,8 @@ Model_Variable = BaseLine
 """
 Name: test
 
-This function tests the model on the TEST Set. 
-Only do this at the end. 
+This function tests the model on the TEST Set.
+Only do this at the end.
 """
 def test(args):
     # Some preparation
@@ -89,7 +89,7 @@ Name: val
 
 This function tests the model on the validation set
 This function does this directly.
-However the model is also tested 
+However the model is also tested
 """
 def val(args):
     # Some preparation
@@ -150,7 +150,7 @@ def val(args):
 """
 Name: train
 
-Adam optimizer currently 
+Adam optimizer currently
 """
 def train(args):
     # Some preparation
@@ -203,7 +203,7 @@ def train(args):
         model.load_state_dict(ckpt['state_dict'])
         optimizer.load_state_dict(ckpt['optimizer'])
 
-    # Training script 
+    # Training script
     print('Start training.')
     train_loss_split = []       # will be a list of lists => [ epoch1[], epoch2[], ...]
     val_loss_per_epoch = []     # will be a list of lists => [ epoch1[], epoch2[], ...]
@@ -251,7 +251,7 @@ def train(args):
                         (ep+1, step, loader.n_batches, loss.data[0], correct, args.bsize, correct * 100 / args.bsize))
 
         """
-        Run Validation Here 
+        Run Validation Here
         """
         val_loss_per_epoch.append([])
         val_accuracy_per_epoch.append([])
@@ -301,7 +301,7 @@ def train(args):
 
 
         """
-        Plot Results Here 
+        Plot Results Here
         """
         train_Y_batch_accuracies = list(chain(*train_accuracy_split))
         train_Y_batch_loss = list(chain(*train_loss_split))
@@ -315,20 +315,20 @@ def train(args):
 
         plt.plot(X1,train_Y_batch_accuracies, color='b', label ='train accuracy')
         plt.plot(X3, val_Y_accuracies, color='g', label='val accuracy')
-	plt.title('Training Batch and Validation Accuracies')
-        plt.savefig('save/batch_accuracy')
+        plt.title('Training Batch and Validation Accuracies')
+        plt.savefig('save/batch_accuracy.png')
 
         plt.plot(X2, train_Y_batch_loss, color='b', label='train loss')
         plt.plot(X4, val_Y_loss, color='g', label='val loss')
-	plt.title('Training Batch and Validation Loss')
-        plt.savefig('save/batch_loss')
+    	plt.title('Training Batch and Validation Loss')
+        plt.savefig('save/batch_loss.png')
 
 
 """
-Name: Main 
+Name: Main
 
 Takes in user arguments such train, eval, hyperparams
-Calls Train or Test above 
+Calls Train or Test above
 """
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Winner of VQA 2.0 in CVPR\'17 Workshop')
