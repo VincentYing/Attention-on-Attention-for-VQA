@@ -56,7 +56,7 @@ def plot_resulst(train_accuracy, train_loss, val_accuracy_per_epoch, val_loss_pe
     plt.xlabel('epochs')
     plt.ylabel('accuracy')
     plt.title('Train & Val Accuracy')
-    plt.show(block=True)
+    plt.show()
 
     plt.figure()
     plt.plot(X_Batch, train_Y_loss_batch, color='b', label='train loss')
