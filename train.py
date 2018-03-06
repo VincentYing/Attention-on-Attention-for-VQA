@@ -95,7 +95,7 @@ def train(args):
         'epoch': 00,
     }
 
-    save_model_file = '%s/model-'%model_name + str(0) + '.pth.tar'
+    save_model_file = ('%s/model-' + str(0) + '.pth.tar')%model_name
     print(save_model_file)
     save_model_file_2 = ('%s/model-' + str(0) + '.pth.tar') % str(Model_Variable)
     print(save_model_file_2)
