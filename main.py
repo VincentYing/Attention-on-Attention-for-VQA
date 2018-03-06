@@ -49,7 +49,7 @@ if __name__ == '__main__':
     args, parser = parse_args()
 
     if args.train:
-        train_w_out_val(args)
+        train(args)
     elif args.eval:
         val(args)
     elif args.test:

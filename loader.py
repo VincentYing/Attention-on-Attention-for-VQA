@@ -88,7 +88,7 @@ class Data_loader:
         # initialize loader
         if self.bsize == 0:
             self.bsize = self.n_questions
-        self.n_batches = self.n_questions / self.bsize
+        self.n_batches = int(self.n_questions / self.bsize)
         # self.K = self.i_feat['features'].values()[0].shape[0]
         # self.feat_dim = self.i_feat['features'].values()[0].shape[1]
         self.K = 36
