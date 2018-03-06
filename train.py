@@ -100,7 +100,7 @@ def train(args):
     save_model_file_2 = ('%s/model-' + str(0) + '.pth.tar') % str(Model_Variable)
     print(save_model_file_2)
 
-    torch.save(tbs, ('%s/model-' + str(0) + '.pth.tar'%model_name) )
+    torch.save(tbs, ('%s/model-' + str(0) + '.pth.tar')%model_name )
 
 
 
