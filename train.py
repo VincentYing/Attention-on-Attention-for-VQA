@@ -94,6 +94,12 @@ def train(args):
     tbs = {
         'epoch': 00,
     }
+
+    save_model_file = '%s/model-'%model_name + str(0) + '.pth.tar'
+    print(save_model_file)
+    save_model_file_2 = ('%s/model-' + str(0) + '.pth.tar') % str(Model_Variable)
+    print(save_model_file_2)
+
     torch.save(tbs, ('%s/model-' + str(0) + '.pth.tar'%model_name) )
 
 
