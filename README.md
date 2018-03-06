@@ -4,7 +4,7 @@ Building off/to architecture from [Tips and Tricks for Visual Question Answering
 ![Model architecture](https://i.imgur.com/phBHIqZ.png)
 
 
-## Thank You to: [Mark](https://github.com/markdtw)
+## Thank You [Mark](https://github.com/markdtw)
 - This Project uses Mark's work to preprocess the MSCOCO data 
 
 ## Prerequisites
