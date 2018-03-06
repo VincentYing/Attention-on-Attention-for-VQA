@@ -34,7 +34,7 @@ def plot_resulst(train_accuracy, train_loss, val_accuracy_per_epoch, val_loss_pe
     train_Y_loss = [ sum(ep)/len(ep) for ep in train_loss]
 
     train_Y_accuracies_batch = list(chain(*train_accuracy))
-    train_Y_loss_batch = list(chain(*train_losst))
+    train_Y_loss_batch = list(chain(*train_loss))
 
     num_batch = len(train_Y_loss_batch)
     num_epoch = len(val_loss_per_epoch)
