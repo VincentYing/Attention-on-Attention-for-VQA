@@ -25,6 +25,7 @@ from loader import Data_loader
 from Models import Model, BaseLine
 
 Model_Variable = BaseLine
+model_name = 'Baseline'
 
 
 """
@@ -93,7 +94,7 @@ def train(args):
     tbs = {
         'epoch': 00,
     }
-    torch.save(tbs, ('%s/model-' + str(0) + '.pth.tar'%str(Model_Variable)) )
+    torch.save(tbs, ('%s/model-' + str(0) + '.pth.tar'%model_name) )
 
 
 
