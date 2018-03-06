@@ -17,18 +17,20 @@ import numpy as np
 from itertools import chain
 import matplotlib.pyplot as plt
 
-from train import train
+from train import train 
 from loader import Data_loader
+
 from Models import Model, BaseLine
 
 Model_Variable = BaseLine
 
 
+
 """
 Name: test
 
-This function tests the model on the TEST Set.
-Only do this at the end.
+This function tests the model on the TEST Set. 
+Only do this at the end. 
 """
 def test(args):
     # Some preparation
@@ -84,12 +86,18 @@ def test(args):
     print ('Validation done')
 
 
+
+
+
+
+
+
 """
 Name: val
 
 This function tests the model on the validation set
 This function does this directly.
-However the model is also tested
+However the model is also tested 
 """
 def val(args):
     # Some preparation
@@ -147,10 +155,12 @@ def val(args):
     print ('Validation done')
 
 
+
+
 """
 Name: train
 
-Adam optimizer currently
+Adam optimizer currently 
 """
 def train(args):
     # Some preparation
@@ -171,6 +181,7 @@ def train(args):
     print('Loading data for validation ')
     # batch_size=0 is a special case to process all data
     #validation_loader = Data_loader(batch_size=args.bsize, emb_dim=args.emb, multilabel=args.multilabel, train=False, val=True, test=False)
+
 
     # Chose model & build its graph, Model chosen above in global variable
     print('Initializing model')
@@ -203,7 +214,7 @@ def train(args):
         model.load_state_dict(ckpt['state_dict'])
         optimizer.load_state_dict(ckpt['optimizer'])
 
-    # Training script
+    # Training script 
     print('Start training.')
     train_loss_split = []       # will be a list of lists => [ epoch1[], epoch2[], ...]
     val_loss_per_epoch = []     # will be a list of lists => [ epoch1[], epoch2[], ...]
@@ -234,6 +245,7 @@ def train(args):
             optimizer.step()
             optimizer.zero_grad()
 
+
             # Some stats
             _, oix = output.data.max(1)
             if args.multilabel:
@@ -250,8 +262,9 @@ def train(args):
                 print ('Epoch %02d(%03d/%03d), loss: %.3f, correct: %3d / %d, accuracy: (%.2f%%)' %
                         (ep+1, step, loader.n_batches, loss.data[0], correct, args.bsize, correct * 100 / args.bsize))
 
+
         """
-        Run Validation Here
+        Run Validation Here 
         """
         val_loss_per_epoch.append([])
         val_accuracy_per_epoch.append([])
@@ -268,6 +281,7 @@ def train(args):
             output = model(q, i)
             loss = criterion(output, a)
 
+
             # Some stats
             _, oix = output.data.max(1)
             if args.multilabel:
@@ -279,6 +293,7 @@ def train(args):
 
             val_loss_per_epoch[ep].append(loss.data[0])
             val_accuracy_per_epoch[ep].append(accuracy)
+
 
         # Save model after every epoch
         tbs = {
@@ -298,35 +313,42 @@ def train(args):
                 sum(val_loss_per_epoch[ep])/len(val_loss_per_epoch[ep]), sum(val_accuracy_per_epoch[ep])/len(val_accuracy_per_epoch[ep]))
         )
 
+
         """
-        Plot Results Here
+        Plot Results Here 
         """
+        #X_batch = np.arange(1,(args.ep+1),1/loader.n_batches)
+        #X_batch_2 = np.arange(1, (args.ep + 1),1/validation_loader.n_batches)
+        #X_epoch = range(1,(args.ep+1))
+
         train_Y_batch_accuracies = list(chain(*train_accuracy_split))
         train_Y_batch_loss = list(chain(*train_loss_split))
-        X1 = np.arange(0, len(train_Y_batch_accuracies))
-        X2 = np.arange(0, len(train_Y_batch_loss))
 
         val_Y_accuracies = list(chain(*val_accuracy_per_epoch))
         val_Y_loss = list(chain(*val_loss_per_epoch))
+
+        X1 = np.arange(0, len(train_Y_batch_accuracies))
+        X2 = np.arange(0, len(train_Y_batch_loss))
         X3 = np.arange(0, len(val_Y_accuracies))
         X4 = np.arange(0, len(val_Y_loss))
 
         plt.plot(X1,train_Y_batch_accuracies, color='b', label ='train accuracy')
         plt.plot(X3, val_Y_accuracies, color='g', label='val accuracy')
-        plt.title('Training Batch and Validation Accuracies')
-        plt.savefig('save/batch_accuracy.png')
+        plt.show()
 
         plt.plot(X2, train_Y_batch_loss, color='b', label='train loss')
         plt.plot(X4, val_Y_loss, color='g', label='val loss')
-        plt.title('Training Batch and Validation Loss')
-        plt.savefig('save/batch_loss.png')
+        plt.show()
+
+
+
 
 
 """
-Name: Main
+Name: Main 
 
 Takes in user arguments such train, eval, hyperparams
-Calls Train or Test above
+Calls Train or Test above 
 """
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Winner of VQA 2.0 in CVPR\'17 Workshop')
@@ -350,3 +372,4 @@ if __name__ == '__main__':
         test(args)
     if not args.train and not args.eval:
         parser.print_help()
+

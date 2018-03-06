@@ -9,9 +9,10 @@ import json
 import argparse
 
 
-from train import train
+from train import train, train_w_out_val
 from test import test
 from val import val
+
 
 
 """
@@ -37,6 +38,7 @@ def parse_args():
     return args, parser
 
 
+
 """
 Name: main 
 
@@ -47,7 +49,7 @@ if __name__ == '__main__':
     args, parser = parse_args()
 
     if args.train:
-        train(args)
+        train_w_out_val(args)
     elif args.eval:
         val(args)
     elif args.test:

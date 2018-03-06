@@ -63,6 +63,14 @@ class BaseLine(nn.Module): #Change the name for each model
         attention = F.softmax(attention, dim=1)                 # (batch, K, 1)
         print(attention.size(), "(batch, K, 1)")
 
+        """
+        # get weighted image vector
+        attention.squeeze()                                     # (batch, K)
+        print(attention.size(), "(batch, K)")
+        context_vec = torch.bmm(attention.unsqueeze(1), image).squeeze()  # (batch, feat_dim): (batch, 1, K) x (batch, K, feat_dim)
+        print(context_vec.size(), "(batch, feat_dim)")
+        """
+
         context_vec = (attention * image).sum(1)           # (batch, feat_dim): (batch, K, 1) * (batch, K, feat_dim)
         print(context_vec.size(),  "(batch, feat_dim)")
 
@@ -118,7 +126,6 @@ class Model(nn.Module):
         # initialize word embedding layer weight
         self.wembed.weight.data.copy_(torch.from_numpy(pretrained_wemb))
 
-
     def forward(self, question, image):
         """
         question -> shape (batch, seqlen)
@@ -150,7 +157,6 @@ class Model(nn.Module):
         s_head = self.clf_w(self._gated_tanh(h, self.gt_W_clf, self.gt_W_prime_clf))
 
         return s_head  # (batch, out_dim)
-
 
     def _gated_tanh(self, x, W, W_prime):
         """
