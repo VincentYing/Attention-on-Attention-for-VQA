@@ -30,8 +30,8 @@ Plots train & validation: loss, accuracy
 """
 def plot_resulst(train_accuracy, train_loss, val_accuracy_per_epoch, val_loss_per_epoch, batch_size, total_epochs):
 
-    train_Y_accuracies = [ sum(train_accuracy[ep])/len(train_accuracy[ep]) for ep in train_accuracy]
-    train_Y_loss = [ sum(train_loss[ep])/len(train_loss[ep]) for ep in train_loss]
+    train_Y_accuracies = [ sum(ep)/len(ep) for ep in train_accuracy]
+    train_Y_loss = [ sum(ep)/len(ep) for ep in train_loss]
 
     train_Y_accuracies_batch = list(chain(*train_accuracy))
     train_Y_loss_batch = list(chain(*train_losst))
