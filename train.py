@@ -48,6 +48,7 @@ def plot_resulst(train_accuracy, train_loss, val_accuracy_per_epoch, val_loss_pe
     X_Batch = np.arange(1/batch_size, (num_batch+1)/batch_size, 1/batch_size)
     X_Epoch = np.arange(1, (num_epoch+1))
 
+    plt.figure()
     plt.plot(X_Batch, train_Y_accuracies_batch, color='b', label='train accuracy')
     plt.plot(X_Epoch, train_Y_accuracies, color='b', label='train accuracy')
     plt.plot(X_Epoch, val_accuracy_per_epoch, color='g', label='val accuracy')
@@ -57,6 +58,7 @@ def plot_resulst(train_accuracy, train_loss, val_accuracy_per_epoch, val_loss_pe
     plt.title('Train & Val Accuracy')
     plt.show()
 
+    plt.figure()
     plt.plot(X_Batch, train_Y_loss_batch, color='b', label='train loss')
     plt.plot(X_Epoch, train_Y_loss, color='b', label='train loss')
     plt.plot(X_Epoch, val_loss_per_epoch, color='g', label='val loss')
@@ -98,8 +100,6 @@ def train(args):
 
     save_model_file = ('%s/model-' + str(0) + '.pth.tar')%model_name
     print(save_model_file)
-    save_model_file_2 = ('%s/model-' + str(0) + '.pth.tar') % str(Model_Variable)
-    print(save_model_file_2)
 
     torch.save(tbs, ('Save/%s_epoch-' + str(0) + '.pth.tar')%model_name )
 
