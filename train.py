@@ -15,7 +15,11 @@ from torch.autograd import Variable
 
 import numpy as np
 from itertools import chain
+
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
+
 
 from loader import Data_loader
 from Models import Model, BaseLine
