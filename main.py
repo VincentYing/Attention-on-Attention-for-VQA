@@ -14,7 +14,6 @@ from test import test
 from val import val
 
 
-
 """
 Name: parse_args 
 
@@ -36,7 +35,6 @@ def parse_args():
     if len(unparsed) != 0: raise SystemExit('Unknown argument: {}'.format(unparsed))
 
     return args, parser
-
 
 
 """

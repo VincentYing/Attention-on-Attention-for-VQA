@@ -20,8 +20,6 @@ import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
 
-
-
 from loader import Data_loader
 from Models import Model, BaseLine
 
@@ -82,7 +80,6 @@ def train(args):
     else:
         raise SystemExit('No CUDA available, don\'t do this.')
 
-
     # Load Data
     print ('Loading data for training ')
     loader = Data_loader(batch_size=args.bsize, emb_dim=args.emb, multilabel=args.multilabel,
@@ -95,7 +92,6 @@ def train(args):
     # batch_size=0 is a special case to process all data
     validation_loader = Data_loader(batch_size=0, emb_dim=args.emb, multilabel=args.multilabel,
                                     train=False, val=True, test=False)
-
 
     # Chose model & build its graph, Model chosen above in global variable
     print('Initializing model')
@@ -202,7 +198,6 @@ def train(args):
             val_loss_per_epoch.append(loss.data[0])
             val_accuracy_per_epoch.append(accuracy)
 
-
         # Save model after every epoch
         tbs = {
             'epoch': ep + 1,
@@ -222,6 +217,3 @@ def train(args):
         )
 
         plot_resulst(train_accuracy_split, train_loss_split, val_accuracy_per_epoch, val_loss_per_epoch, loader.bsize, args.ep)
-
-
-

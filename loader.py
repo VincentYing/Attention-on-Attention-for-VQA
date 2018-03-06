@@ -20,7 +20,6 @@ class Data_loader:
         self.test = test
         self.val = val
 
-
         if train:
             q_dict = pickle.load(open('data/train_q_dict.p', 'rb'))
             self.q_itow = q_dict['itow']
@@ -35,15 +34,11 @@ class Data_loader:
             # self.vqa List of Dictionaries
             self.vqa = json.load(open('data/vqa_train_final.json'))
             self.n_questions = len(self.vqa)
-
             self.i_feat = np.load('data/coco_features.npy', encoding='latin1').item()
 
             # Split Data
-
             iids = [x['image_id'] for x in self.vqa]
             self.i_feat = {key: self.i_feat[key] for key in self.i_feat.keys() if key in iids}
-
-
         elif val:
             q_dict = pickle.load(open('data/val_q_dict.p', 'rb'))
             self.q_itow = q_dict['itow']
@@ -58,15 +53,11 @@ class Data_loader:
             # self.vqa List of Dictionaries
             self.vqa = json.load(open('data/vqa_val_final.json'))
             self.n_questions = len(self.vqa)
-
             self.i_feat = np.load('data/coco_features.npy', encoding='latin1').item()
 
             # Split data
-
             iids =  [x['image_id'] for x in self.vqa]
             self.i_feat = {key: self.i_feat[key] for key in self.i_feat.keys() if key in iids}
-
-
         elif test:
             q_dict = pickle.load(open('data/test_q_dict.p', 'rb'))
             self.q_itow = q_dict['itow']

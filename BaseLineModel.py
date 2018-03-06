@@ -20,15 +20,12 @@ class BaseLineModel(nn.Module): #Change the name for each model
         self.hid_dim = hid_dim
         self.out_dim = out_dim      # out_put vocab
 
-
-
         #question encoding seperate embedding for each word
         self.wembed = nn.Embedding(num_embeddings= self.vocab_size, embedding_dim= self.emb_dim)
         # initialize word embedding layer weights
         self.wembed.weight.data.copy_(torch.from_numpy(pretrained_wemb))
 
         self.gru = nn.GRU(emb_dim, hid_dim)
-
 
         # First 1 layer network, with outputlayer [for attention]
         self.NN1_W1 = nn.Linear(in_features=self.emb_dim + self.hid_dim, out_features=self.hid_dim, bias=True)
@@ -67,14 +64,6 @@ class BaseLineModel(nn.Module): #Change the name for each model
         attention = F.softmax(attention, dim=1)                 # (batch, K, 1)
         print(attention.size(), "(batch, K, 1)")
 
-        """
-        # get weighted image vector
-        attention.squeeze()                                     # (batch, K)
-        print(attention.size(), "(batch, K)")
-        context_vec = torch.bmm(attention.unsqueeze(1), image).squeeze()  # (batch, feat_dim): (batch, 1, K) x (batch, K, feat_dim)
-        print(context_vec.size(), "(batch, feat_dim)")
-        """
-
         context_vec = (attention * image).sum(1)           # (batch, feat_dim): (batch, K, 1) * (batch, K, feat_dim)
         print(context_vec.size(),  "(batch, feat_dim)")
 
@@ -85,4 +74,3 @@ class BaseLineModel(nn.Module): #Change the name for each model
         output = self.NN2_W3(concat_2)                      # (batch, out_dim)
 
         return output               # (batch, out_dim)
-
