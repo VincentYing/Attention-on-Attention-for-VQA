@@ -329,8 +329,6 @@ def train_w_out_val(args):
             'epoch': ep + 1,
             'train_loss': train_loss_split,
             'train_accuracy': train_accuracy_split,
-            'val_loss': val_loss_per_epoch,
-            'val_accuracy':val_accuracy_per_epoch,
             'state_dict': model.state_dict(),
             'optimizer': optimizer.state_dict()
         }
