@@ -19,6 +19,7 @@ from itertools import chain
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
+plt.ioff()
 
 
 from loader import Data_loader
@@ -241,7 +242,7 @@ def train(args):
             'state_dict': model.state_dict(),
             'optimizer': optimizer.state_dict()
         }
-        torch.save(tbs, 'save/model-' + str(ep+1) + '.pth.tar')
+        torch.save(tbs, ('Save/%s_epoch-' + str(ep+1) + '.pth.tar')%model_name)
 
         print (
                 'Epoch %02d done, average train loss: %.3f, average train accuracy: %.2f%%, average val loss: %.3f, average val accuracy: %.2f%%' %
