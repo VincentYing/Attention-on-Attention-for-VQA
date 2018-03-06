@@ -36,9 +36,13 @@ class Data_loader:
             self.vqa = json.load(open('data/vqa_train_final.json'))
             self.n_questions = len(self.vqa)
 
+            self.i_feat = np.load('data/coco_features.npy', encoding='latin1').item()
+
+            # Split Data
+
             iids = [x['image_id'] for x in self.vqa]
-            self.i_feat = np.load('data/coco_features.npy', encoding= 'latin1').item()
             self.i_feat = {key: self.i_feat[key] for key in self.i_feat.keys() if key in iids}
+
 
         elif val:
             q_dict = pickle.load(open('data/val_q_dict.p', 'rb'))
@@ -55,9 +59,13 @@ class Data_loader:
             self.vqa = json.load(open('data/vqa_val_final.json'))
             self.n_questions = len(self.vqa)
 
+            self.i_feat = np.load('data/coco_features.npy', encoding='latin1').item()
+
+            # Split data
+
             iids =  [x['image_id'] for x in self.vqa]
-            self.i_feat = np.load('data/coco_features.npy', encoding= 'latin1').item()
             self.i_feat = {key: self.i_feat[key] for key in self.i_feat.keys() if key in iids}
+
 
         elif test:
             q_dict = pickle.load(open('data/test_q_dict.p', 'rb'))
@@ -80,7 +88,7 @@ class Data_loader:
         # initialize loader
         if self.bsize == 0:
             self.bsize = self.n_questions
-        self.n_batches = self.n_questions // self.bsize
+        self.n_batches = self.n_questions / self.bsize
         # self.K = self.i_feat['features'].values()[0].shape[0]
         # self.feat_dim = self.i_feat['features'].values()[0].shape[1]
         self.K = 36

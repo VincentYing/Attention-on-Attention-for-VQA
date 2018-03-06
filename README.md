@@ -1,11 +1,13 @@
-# Attention Architecture search for Visual Question Answering (Stanford CS224N/CS230 Winter 2017-18)
+# Model Architecture search for Visual Question Answering (Stanford CS224N/CS230 Winter 2017-18)
 Building off/to architecture from [Tips and Tricks for Visual Question Answering: Learnings from the 2017 Challenge by Teney et al](https://arxiv.org/pdf/1708.02711.pdf).
 
 ![Model architecture](https://i.imgur.com/phBHIqZ.png)
 
 
-## Thank You [Mark](https://github.com/markdtw)
-- This Project uses Mark's work to preprocess the MSCOCO data 
+## Thank You to: [Mark](https://github.com/markdtw)
+- Our implementations started off referencing Mark's work.
+- Mark's code was used to preprocess alot of the VQA 2.0 data, but all Model code is written by us
+- Our Code further fixes Mark's bugs and allows for Testing the model on the Test set as well
 
 ## Prerequisites
 - Python 2.7+
@@ -19,7 +21,7 @@ Building off/to architecture from [Tips and Tricks for Visual Question Answering
 - [VQA 2.0](http://visualqa.org/download.html)
 - [COCO 36 features pretrained resnet model](https://github.com/peteanderson80/bottom-up-attention#pretrained-features)
 - [GloVe pretrained Wikipedia+Gigaword word embedding](https://nlp.stanford.edu/projects/glove/)
-- Already Tokenized Questions and Answers!!!! (https://drive.google.com/drive/folders/0B5j6QKJb0ztbYmVXT0hBUF91RHM)
+- Already Tokenized Questions and Answers!!!! Thanks Mark (https://drive.google.com/drive/folders/0B5j6QKJb0ztbYmVXT0hBUF91RHM)
 
 
 ## Resources

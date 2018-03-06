@@ -75,7 +75,7 @@ class BaseLineModel(nn.Module): #Change the name for each model
         print(context_vec.size(), "(batch, feat_dim)")
         """
 
-        context_vec = (attention * image).sum(1) # [batch, v_dim]           # (batch, feat_dim): (batch, K, 1) * (batch, K, feat_dim)
+        context_vec = (attention * image).sum(1)           # (batch, feat_dim): (batch, K, 1) * (batch, K, feat_dim)
         print(context_vec.size(),  "(batch, feat_dim)")
 
         # Output
