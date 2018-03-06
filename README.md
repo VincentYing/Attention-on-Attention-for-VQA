@@ -1,4 +1,4 @@
-# Model Architecture search for Visual Question Answering (Stanford CS224N/CS230 Winter 2017-18)
+# Attention Architecture search for Visual Question Answering (Stanford CS224N/CS230 Winter 2017-18)
 Building off/to architecture from [Tips and Tricks for Visual Question Answering: Learnings from the 2017 Challenge by Teney et al](https://arxiv.org/pdf/1708.02711.pdf).
 
 ![Model architecture](https://i.imgur.com/phBHIqZ.png)
