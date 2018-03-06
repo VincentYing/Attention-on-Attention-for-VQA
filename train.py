@@ -19,7 +19,7 @@ from itertools import chain
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
-plt.ioff()
+
 
 
 from loader import Data_loader
@@ -66,7 +66,7 @@ def plot_resulst(train_accuracy, train_loss, val_accuracy_per_epoch, val_loss_pe
     plt.xlabel('epochs')
     plt.ylabel('loss')
     plt.title('Train & Val Loss')
-    plt.show(block=True)
+    plt.show()
 
 
 """
@@ -81,35 +81,6 @@ def train(args):
         torch.cuda.manual_seed(1000)
     else:
         raise SystemExit('No CUDA available, don\'t do this.')
-
-
-
-    #Trying stuff out
-
-
-    train_loss_split = [[1,2],[1,2],[1,2],[1,2],[2,3]]  # will be a list of lists => [ epoch1[], epoch2[], ...]
-    train_accuracy_split = [[1,2],[2,2],[2,2],[1,2],[1,2]]  # will be a list of lists => [ epoch1[], epoch2[], ...]
-    val_loss_per_epoch = [1,2,3,4,4]  # will be a list => [ epoch1, epoch2, ...]
-    val_accuracy_per_epoch = [1,2,3,3,4]
-
-    plot_resulst(train_accuracy_split, train_loss_split, val_accuracy_per_epoch, val_loss_per_epoch, 2, 5)
-
-    tbs = {
-        'epoch': 00,
-    }
-
-    save_model_file = ('%s/model-' + str(0) + '.pth.tar')%model_name
-    print(save_model_file)
-
-    torch.save(tbs, ('Save/%s_epoch-' + str(0) + '.pth.tar')%model_name )
-
-
-
-    return
-
-
-
-
 
 
     # Load Data
@@ -250,6 +221,7 @@ def train(args):
                 val_loss_per_epoch[ep], val_accuracy_per_epoch[ep])
         )
 
+        plot_resulst(train_accuracy_split, train_loss_split, val_accuracy_per_epoch, val_loss_per_epoch, loader.bsize, args.ep)
 
 
 
