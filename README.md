@@ -72,7 +72,7 @@ Certain Pretrained models availible upon request.
 
 ## [Our Paper](http://arxiv.org/abs/1803.07724)
 
-![Paper](https://github.com/SinghJasdeep/Attention-on-Attention-for-VQA/blob/master/Paper/Attn_on_Attn.pdf)
+[Paper](https://github.com/SinghJasdeep/Attention-on-Attention-for-VQA/blob/master/Paper/Attn_on_Attn.pdf)
 
 ## [Citation](http://dblp.uni-trier.de/rec/bibtex/journals/corr/abs-1803-07724): 
 
